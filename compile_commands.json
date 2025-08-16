@@ -1,0 +1,32 @@
+[
+{
+  "directory": "/home/artur/MyPrograms/cpp_orders/build",
+  "command": "/usr/bin/c++ -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NO_DEBUG -DQT_SQL_LIB -DQT_WIDGETS_LIB -I/home/artur/MyPrograms/cpp_orders/build/orders_autogen/include -I/home/artur/MyPrograms/cpp_orders/include -isystem /usr/include/x86_64-linux-gnu/qt6/QtWidgets -isystem /usr/include/x86_64-linux-gnu/qt6 -isystem /usr/include/x86_64-linux-gnu/qt6/QtCore -isystem /usr/lib/x86_64-linux-gnu/qt6/mkspecs/linux-g++ -isystem /usr/include/x86_64-linux-gnu/qt6/QtGui -isystem /usr/include/x86_64-linux-gnu/qt6/QtSql -std=gnu++20 -fPIC -o CMakeFiles/orders.dir/orders_autogen/mocs_compilation.cpp.o -c /home/artur/MyPrograms/cpp_orders/build/orders_autogen/mocs_compilation.cpp",
+  "file": "/home/artur/MyPrograms/cpp_orders/build/orders_autogen/mocs_compilation.cpp",
+  "output": "CMakeFiles/orders.dir/orders_autogen/mocs_compilation.cpp.o"
+},
+{
+  "directory": "/home/artur/MyPrograms/cpp_orders/build",
+  "command": "/usr/bin/c++ -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NO_DEBUG -DQT_SQL_LIB -DQT_WIDGETS_LIB -I/home/artur/MyPrograms/cpp_orders/build/orders_autogen/include -I/home/artur/MyPrograms/cpp_orders/include -isystem /usr/include/x86_64-linux-gnu/qt6/QtWidgets -isystem /usr/include/x86_64-linux-gnu/qt6 -isystem /usr/include/x86_64-linux-gnu/qt6/QtCore -isystem /usr/lib/x86_64-linux-gnu/qt6/mkspecs/linux-g++ -isystem /usr/include/x86_64-linux-gnu/qt6/QtGui -isystem /usr/include/x86_64-linux-gnu/qt6/QtSql -std=gnu++20 -fPIC -o CMakeFiles/orders.dir/src/CodeEan.cpp.o -c /home/artur/MyPrograms/cpp_orders/src/CodeEan.cpp",
+  "file": "/home/artur/MyPrograms/cpp_orders/src/CodeEan.cpp",
+  "output": "CMakeFiles/orders.dir/src/CodeEan.cpp.o"
+},
+{
+  "directory": "/home/artur/MyPrograms/cpp_orders/build",
+  "command": "/usr/bin/c++ -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NO_DEBUG -DQT_SQL_LIB -DQT_WIDGETS_LIB -I/home/artur/MyPrograms/cpp_orders/build/orders_autogen/include -I/home/artur/MyPrograms/cpp_orders/include -isystem /usr/include/x86_64-linux-gnu/qt6/QtWidgets -isystem /usr/include/x86_64-linux-gnu/qt6 -isystem /usr/include/x86_64-linux-gnu/qt6/QtCore -isystem /usr/lib/x86_64-linux-gnu/qt6/mkspecs/linux-g++ -isystem /usr/include/x86_64-linux-gnu/qt6/QtGui -isystem /usr/include/x86_64-linux-gnu/qt6/QtSql -std=gnu++20 -fPIC -o CMakeFiles/orders.dir/src/Database.cpp.o -c /home/artur/MyPrograms/cpp_orders/src/Database.cpp",
+  "file": "/home/artur/MyPrograms/cpp_orders/src/Database.cpp",
+  "output": "CMakeFiles/orders.dir/src/Database.cpp.o"
+},
+{
+  "directory": "/home/artur/MyPrograms/cpp_orders/build",
+  "command": "/usr/bin/c++ -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NO_DEBUG -DQT_SQL_LIB -DQT_WIDGETS_LIB -I/home/artur/MyPrograms/cpp_orders/build/orders_autogen/include -I/home/artur/MyPrograms/cpp_orders/include -isystem /usr/include/x86_64-linux-gnu/qt6/QtWidgets -isystem /usr/include/x86_64-linux-gnu/qt6 -isystem /usr/include/x86_64-linux-gnu/qt6/QtCore -isystem /usr/lib/x86_64-linux-gnu/qt6/mkspecs/linux-g++ -isystem /usr/include/x86_64-linux-gnu/qt6/QtGui -isystem /usr/include/x86_64-linux-gnu/qt6/QtSql -std=gnu++20 -fPIC -o CMakeFiles/orders.dir/src/MainWindow.cpp.o -c /home/artur/MyPrograms/cpp_orders/src/MainWindow.cpp",
+  "file": "/home/artur/MyPrograms/cpp_orders/src/MainWindow.cpp",
+  "output": "CMakeFiles/orders.dir/src/MainWindow.cpp.o"
+},
+{
+  "directory": "/home/artur/MyPrograms/cpp_orders/build",
+  "command": "/usr/bin/c++ -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NO_DEBUG -DQT_SQL_LIB -DQT_WIDGETS_LIB -I/home/artur/MyPrograms/cpp_orders/build/orders_autogen/include -I/home/artur/MyPrograms/cpp_orders/include -isystem /usr/include/x86_64-linux-gnu/qt6/QtWidgets -isystem /usr/include/x86_64-linux-gnu/qt6 -isystem /usr/include/x86_64-linux-gnu/qt6/QtCore -isystem /usr/lib/x86_64-linux-gnu/qt6/mkspecs/linux-g++ -isystem /usr/include/x86_64-linux-gnu/qt6/QtGui -isystem /usr/include/x86_64-linux-gnu/qt6/QtSql -std=gnu++20 -fPIC -o CMakeFiles/orders.dir/src/main.cpp.o -c /home/artur/MyPrograms/cpp_orders/src/main.cpp",
+  "file": "/home/artur/MyPrograms/cpp_orders/src/main.cpp",
+  "output": "CMakeFiles/orders.dir/src/main.cpp.o"
+}
+]
