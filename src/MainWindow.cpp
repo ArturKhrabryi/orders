@@ -177,8 +177,8 @@ void MainWindow::handleEnterButton() noexcept
 void MainWindow::handleConvertButton() noexcept
 {
     QProcess convertion;
-    const QString program = QCoreApplication::applicationDirPath() + "/toOds.exe";
-    const QString dbPath = "zamówienie.db";
+    const QString program = QCoreApplication::applicationDirPath() + "/toOds";
+    const QString dbPath = QCoreApplication::applicationDirPath() + "/zamówienie.db";
 
     convertion.setProgram(program);
     convertion.setArguments({ dbPath });

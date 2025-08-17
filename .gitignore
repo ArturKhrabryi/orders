@@ -1,0 +1,54 @@
+# --- CMake ---
+/build/
+/CMakeCache.txt
+/CMakeFiles/
+/Testing/
+/Makefile
+/cmake_install.cmake
+/CPackConfig.cmake
+/CPackSourceConfig.cmake
+/_CPack_Packages/
+
+# --- Qt Creator/CLion ---
+*.user
+.idea/
+.vscode/
+
+# --- Compiled binaries ---
+*.exe
+*.dll
+*.so
+*.dylib
+*.a
+*.lib
+*.o
+*.obj
+
+# --- Python ---
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.python-version
+/venv/
+/pyenv/
+
+# --- PyInstaller artifacts ---
+/pydist/
+/pybuild/
+/pyspec/
+
+# --- Logs & misc ---
+*.log
+*.tmp
+*.bak
+*.swp
+.DS_Store
+Thumbs.db
+/compile_commands.json
+
+# --- Packages ---
+*.deb
+*.rpm
+*.zip
+*.tar.gz
