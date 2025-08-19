@@ -2,8 +2,8 @@
 
 #include <QString>
 #include <QSqlRecord>
-#include <stdexcept>
 #include <QSqlError>
+#include <qsqlquery.h>
 #include "Product.hpp"
 
 
@@ -11,54 +11,18 @@ Database::Database() : db(QSqlDatabase::addDatabase("QSQLITE"))
 {
     this->db.setDatabaseName("zamówienie.db");
     if (!this->db.open())
-        throw std::runtime_error("Cannot open database.");
+        throw SqlOpenDatabaseError(this->db.lastError());
+    
+    this->transaction();
+    auto rollbackGuard = this->makeRollbackGuard();
 
     QSqlQuery cur(this->db);
     if (!cur.exec("PRAGMA foreign_keys = ON"))
-        throw std::runtime_error("Cannot enable foreign keys: " + cur.lastError().text().toStdString());
+        throw SqlEnableForeignKeysError(cur.lastError());
 
-    this->transaction();
-
-    auto rollbackGuard = this->makeRollbackGuard();
-
-    QString sql =
-        "CREATE TABLE IF NOT EXISTS units (\n"
-            "\tcode TEXT PRIMARY KEY,\n"
-            "\tname TEXT NOT NULL\n"
-            ") WITHOUT ROWID";
-
-    if (!cur.exec(sql))
-        throw std::runtime_error("Cannot create table units: " + cur.lastError().text().toStdString());
-
-    sql =
-        "INSERT OR IGNORE INTO units (code, name) VALUES\n"
-            "\t('kpl', 'komplet'),\n"
-            "\t('op', 'opakowanie'),\n"
-            "\t('pal', 'paleta'),\n"
-            "\t('szt', 'sztuka'),\n"
-            "\t('t', 'tona'),\n"
-            "\t('m2', 'metr kwadratowy'),\n"
-            "\t('rol', 'rolka')";
-
-    if (!cur.exec(sql))
-        throw std::runtime_error("Cannot insert values into units: " + cur.lastError().text().toStdString());
-
-    sql =
-        "CREATE TABLE IF NOT EXISTS products (\n"
-            "\tid INTEGER PRIMARY KEY,\n"
-            "\tname TEXT UNIQUE NOT NULL,\n"
-            "\tcodeEan TEXT UNIQUE,\n"
-            "\tquantity REAL NOT NULL CHECK (quantity >= 0),\n"
-            "\tunitCode TEXT NOT NULL,\n"
-            "\tFOREIGN KEY (unitCode) REFERENCES units(code)\n"
-            "\tON UPDATE CASCADE\n"
-            "\tON DELETE RESTRICT)";
-    
-    if (!cur.exec(sql))
-        throw std::runtime_error("Cannot create table products: " + cur.lastError().text().toStdString());
-
-    if (!cur.exec("CREATE INDEX IF NOT EXISTS idx_products_code_ean ON products(codeEan)"))
-        throw std::runtime_error("Cannot create index: " + cur.lastError().text().toStdString());
+    this->createUnits();
+    this->createProducts();
+    this->createTrash();
 
     this->commit();
 
@@ -82,7 +46,7 @@ std::vector<Product> Database::fetchProducts() const
 
     const QString sql = "SELECT name, codeEan, quantity, unitCode FROM products ORDER BY id ASC";
     if (!cur.exec(sql))
-        throw std::runtime_error("Cannot fetch products: " + cur.lastError().text().toStdString());
+        throw SqlFetchProductsError(cur.lastError());
 
     const auto rec = cur.record();
     auto iName = rec.indexOf("name");
@@ -125,22 +89,90 @@ void Database::addProduct(const Product& product)
     cur.addBindValue(product.unitCode);
 
     if (!cur.exec())
-        throw std::runtime_error("Cannot add product: " + cur.lastError().text().toStdString());
+        throw SqlAddProductError(cur.lastError());
 
     this->commit();
     rollbackGuard.release();
 }
 
+void Database::createUnits()
+{
+    QString sql =
+        "CREATE TABLE IF NOT EXISTS units (\n"
+            "\tcode TEXT PRIMARY KEY,\n"
+            "\tname TEXT NOT NULL\n"
+            ") WITHOUT ROWID";
+
+    QSqlQuery cur(this->db);
+    if (!cur.exec(sql))
+        throw SqlCreationTableError(cur.lastError());
+
+    sql =
+        "INSERT OR IGNORE INTO units (code, name) VALUES\n"
+            "\t('kpl', 'komplet'),\n"
+            "\t('op', 'opakowanie'),\n"
+            "\t('pal', 'paleta'),\n"
+            "\t('szt', 'sztuka'),\n"
+            "\t('t', 'tona'),\n"
+            "\t('m2', 'metr kwadratowy'),\n"
+            "\t('rol', 'rolka')";
+
+    if (!cur.exec(sql))
+        throw SqlInsertionIntoTableError(cur.lastError());
+}
+
+void Database::createProducts()
+{
+    QString sql =
+        "CREATE TABLE IF NOT EXISTS products (\n"
+            "\tid INTEGER PRIMARY KEY,\n"
+            "\tname TEXT UNIQUE NOT NULL,\n"
+            "\tcodeEan TEXT UNIQUE,\n"
+            "\tquantity REAL NOT NULL CHECK (quantity >= 0),\n"
+            "\tunitCode TEXT NOT NULL,\n"
+            "\tFOREIGN KEY (unitCode) REFERENCES units(code)\n"
+            "\tON UPDATE CASCADE\n"
+            "\tON DELETE RESTRICT)";
+    
+    QSqlQuery cur(this->db);
+    if (!cur.exec(sql))
+        throw SqlCreationTableError(cur.lastError());
+
+    if (!cur.exec("CREATE INDEX IF NOT EXISTS idx_products_code_ean ON products(codeEan)"))
+        throw SqlCreationIndexError(cur.lastError());
+}
+
+void Database::createTrash()
+{
+    QString sql =
+        "CREATE TABLE IF NOT EXISTS trash (\n"
+            "\tid INTEGER PRIMARY KEY,\n"
+            "\tname TEXT UNIQUE NOT NULL,\n"
+            "\tcodeEan TEXT UNIQUE,\n"
+            "\tquantity REAL NOT NULL CHECK (quantity >= 0),\n"
+            "\tunitCode TEXT NOT NULL,\n"
+            "\tFOREIGN KEY (unitCode) REFERENCES units(code)\n"
+            "\tON UPDATE CASCADE\n"
+            "\tON DELETE RESTRICT)";
+    
+    QSqlQuery cur(this->db);
+    if (!cur.exec(sql))
+        throw SqlCreationTableError(cur.lastError());
+
+    if (!cur.exec("CREATE INDEX IF NOT EXISTS idx_trash_code_ean ON trash(codeEan)"))
+        throw SqlCreationIndexError(cur.lastError());
+}
+
 void Database::transaction()
 {
-    if (!db.transaction())
-        throw std::runtime_error("Cannot start transaction.");
+    if (!this->db.transaction())
+        throw SqlBeginTransactionError(this->db.lastError());
 }
 
 void Database::commit()
 {
-    if (!db.commit())
-        throw std::runtime_error("Commit failed.");
+    if (!this->db.commit())
+        throw SqlCommitTransactionError(this->db.lastError());
 }
 
 ScopeExit Database::makeRollbackGuard()
