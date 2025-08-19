@@ -22,7 +22,6 @@ if (BUILD_TO_ODS)
     add_custom_command(
         OUTPUT "${TO_ODS_OUT}"
         BYPRODUCTS
-            "${TO_ODS_OUT}"
             "${CMAKE_BINARY_DIR}/pyspec/toOds.spec"
         DEPENDS
             "${TO_ODS_ENTRY}"
