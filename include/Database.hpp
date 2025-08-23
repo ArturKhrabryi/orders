@@ -3,8 +3,11 @@
 #include <QSqlDatabase>
 #include <QSqlQuery>
 #include <QSqlError>
+#include <qsqlquery.h>
 #include <stdexcept>
+#include <tuple>
 #include <vector>
+#include "CodeEan.hpp"
 #include "ScopeExit.hpp"
 
 
@@ -82,9 +85,9 @@ struct SqlCreationIndexError : SqlError
     {}
 };
 
-struct SqlFetchProductsError : SqlError
+struct SqlFetchProductError: SqlError
 {
-    SqlFetchProductsError(const QSqlError& sqlError) :
+    SqlFetchProductError (const QSqlError& sqlError) :
         SqlError("Cannot fetch products", sqlError)
     {}
 };
@@ -96,19 +99,33 @@ struct SqlAddProductError : SqlError
     {}
 };
 
+struct SqlMoveToTrashError : SqlError
+{
+    SqlMoveToTrashError(const QSqlError& sqlError) :
+        SqlError("Cannot move products to trash", sqlError)
+    {}
+};
+
 class Database
 {
 public:
     Database();
     ~Database(); 
 
-    std::vector<Product> fetchProducts() const;
-    void addProduct(const Product& product);
-    void moveProductToTrash(const Product& product);
-    void moveAllProductsToTrash();
+    std::optional<Product> fetchByCodeEan(const CodeEan& codeEan) const;
+    std::vector<Product> fetch() const;
+
+    void add(const Product& product);
+
+    void moveToTrash(const Product& product);
+    void moveAllToTrash();
 
 private:
     QSqlDatabase db;
+
+    // The indexes go in order: name, codeEan, quantity, unitCode
+    std::tuple<int, int, int, int> getNameIndexes(const QSqlQuery& sqlQuery) const noexcept;
+    Product fromSqlQuery(const QSqlQuery& sqlQuery, const std::tuple<int, int, int, int>& indexes = { 1, 2, 3, 4 }) const noexcept;
 
     void createUnits();
     void createProducts();

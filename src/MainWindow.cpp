@@ -10,6 +10,7 @@
 #include <QShortcut>
 #include <QProcess>
 #include <QCoreApplication>
+#include <QInputDialog>
 #include <exception>
 #include <optional>
 #include <qmessagebox.h>
@@ -97,7 +98,9 @@ void MainWindow::clearForms() noexcept
 
 void MainWindow::updateView()
 {
-    auto products = this->db.fetchProducts(); 
+    this->view->clear();
+
+    auto products = this->db.fetch(); 
     for (auto& product : products)
         this->view->append(static_cast<QString>(product));
 }
@@ -160,7 +163,7 @@ void MainWindow::handleEnterButton() noexcept
     try
     {
         auto product = this->getProductFromForms();
-        this->db.addProduct(product);
+        this->db.add(product);
         this->view->append(product);
         this->clearForms();
         this->nameForm->setFocus();
@@ -219,7 +222,38 @@ void MainWindow::handleConvertButton() noexcept
 
 void MainWindow::handleDeleteButton() noexcept
 {
+    bool ok = false; 
+    auto codeEanText = QInputDialog::getText(this, "Wprowadź kod kreskowy", "Kod:", QLineEdit::Normal, "", &ok);
 
+    if (ok) try
+    {
+        CodeEan codeEan(codeEanText);     
+        auto product = this->db.fetchByCodeEan(codeEan);    
+        if (!product)
+        {
+            QMessageBox::information(this, "Nie ma towaru", "Towaru nie ma w systemie - nic do usunięcia");
+
+            return;
+        }
+    
+        this->db.moveToTrash(*product);
+
+        QMessageBox::information(this, "Usunięto towar", "Towar został pomyślnie usunięty");
+
+        this->updateView(); 
+    }
+    catch (const SqlError& ex)
+    {
+        QMessageBox::information(this, "Błąd w bazie towarów", ex.what());
+    }
+    catch (const std::exception& ex)
+    {
+        QMessageBox::information(this, "Błąd", ex.what());
+    }
+    catch (...)
+    {
+        QMessageBox::information(this, "Niewiadomy błąd", "Niewiadomy błąd");
+    }
 }
 
 void MainWindow::handleClearButton() noexcept
