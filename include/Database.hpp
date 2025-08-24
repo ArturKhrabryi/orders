@@ -5,7 +5,6 @@
 #include <QSqlError>
 #include <qsqlquery.h>
 #include <stdexcept>
-#include <tuple>
 #include <vector>
 #include "CodeEan.hpp"
 #include "ScopeExit.hpp"
@@ -78,13 +77,6 @@ struct SqlInsertionIntoTableError : SqlError
     {}
 };
 
-struct SqlCreationIndexError : SqlError
-{
-    SqlCreationIndexError(const QSqlError& sqlError) :
-        SqlError("Cannot create index", sqlError)
-    {}
-};
-
 struct SqlFetchProductError: SqlError
 {
     SqlFetchProductError (const QSqlError& sqlError) :
@@ -106,6 +98,8 @@ struct SqlMoveToTrashError : SqlError
     {}
 };
 
+struct ColumnIdx { int name, codeEan, quantity, unitCode; };
+
 class Database
 {
 public:
@@ -113,6 +107,7 @@ public:
     ~Database(); 
 
     std::optional<Product> fetchByCodeEan(const CodeEan& codeEan) const;
+    std::vector<Product> fetchByName(const QString& name) const;
     std::vector<Product> fetch() const;
 
     void add(const Product& product);
@@ -123,9 +118,8 @@ public:
 private:
     QSqlDatabase db;
 
-    // The indexes go in order: name, codeEan, quantity, unitCode
-    std::tuple<int, int, int, int> getNameIndexes(const QSqlQuery& sqlQuery) const noexcept;
-    Product fromSqlQuery(const QSqlQuery& sqlQuery, const std::tuple<int, int, int, int>& indexes = { 1, 2, 3, 4 }) const noexcept;
+    ColumnIdx getNameIndexes(const QSqlQuery& sqlQuery) const noexcept;
+    Product fromSqlQuery(const QSqlQuery& sqlQuery, const ColumnIdx& indexes = { 1, 2, 3, 4 }) const noexcept;
 
     void createUnits();
     void createProducts();

@@ -224,23 +224,33 @@ void MainWindow::handleDeleteButton() noexcept
 {
     bool ok = false; 
     auto codeEanText = QInputDialog::getText(this, "Wprowadź kod kreskowy", "Kod:", QLineEdit::Normal, "", &ok);
+    bool isNullCodeEan = codeEanText == "-" || codeEanText.isEmpty();
 
     if (ok) try
     {
-        CodeEan codeEan(codeEanText);     
-        auto product = this->db.fetchByCodeEan(codeEan);    
-        if (!product)
+        if (isNullCodeEan)
         {
-            QMessageBox::information(this, "Nie ma towaru", "Towaru nie ma w systemie - nic do usunięcia");
+            ok = false;
+            auto nameText = QInputDialog::getText(this, "Wprowadź nazwę", "Nazwa:", QLineEdit::Normal, "", &ok);
+            auto products = this->db.fetchByName(this->normalize(nameText)); 
+
+             
 
             return;
         }
-    
-        this->db.moveToTrash(*product);
 
-        QMessageBox::information(this, "Usunięto towar", "Towar został pomyślnie usunięty");
+        CodeEan codeEan(codeEanText);
+        auto product = this->db.fetchByCodeEan(codeEan);    
+        if (product)
+        {
+            this->db.moveToTrash(*product);
 
-        this->updateView(); 
+            QMessageBox::information(this, "Usunięto towar", "Towar został pomyślnie usunięty");
+
+            this->updateView(); 
+
+            return;
+        }
     }
     catch (const SqlError& ex)
     {

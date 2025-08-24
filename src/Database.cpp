@@ -3,7 +3,6 @@
 #include <QString>
 #include <QSqlRecord>
 #include <QSqlError>
-#include <iostream>
 #include <qmessagebox.h>
 #include <qsqlquery.h>
 #include "Product.hpp"
@@ -45,6 +44,7 @@ std::optional<Product> Database::fetchByCodeEan(const CodeEan& codeEan) const
 {
     QString sql = "SELECT name, codeEan, quantity, unitCode FROM products WHERE codeEan=?";
     QSqlQuery cur(this->db);
+    cur.setForwardOnly(true);
     cur.prepare(sql);
     cur.addBindValue(codeEan.getValue());
 
@@ -57,6 +57,25 @@ std::optional<Product> Database::fetchByCodeEan(const CodeEan& codeEan) const
     auto indexes = this->getNameIndexes(cur);
     
     return this->fromSqlQuery(cur, indexes);
+}
+
+std::vector<Product> Database::fetchByName(const QString& name) const
+{
+    QString sql = "SELECT name, codeEan, quantity, unitCode FROM products WHERE name LIKE ?";
+    QSqlQuery cur(this->db);
+    cur.setForwardOnly(true);
+    cur.prepare(sql);
+    cur.addBindValue("%" + name + "%");
+
+    if (!cur.exec())
+        throw SqlFetchProductError(cur.lastError());
+
+    std::vector<Product> products;
+    auto indexes = this->getNameIndexes(cur);
+    while (cur.next())
+        products.push_back(this->fromSqlQuery(cur, indexes));
+    
+    return products;
 }
 
 std::vector<Product> Database::fetch() const
@@ -129,7 +148,7 @@ void Database::moveToTrash(const Product& product)
     rollbackGuard.release();
 }
 
-std::tuple<int, int, int, int> Database::getNameIndexes(const QSqlQuery& sqlQuery) const noexcept
+ColumnIdx Database::getNameIndexes(const QSqlQuery& sqlQuery) const noexcept
 {
     const auto rec = sqlQuery.record();
     auto iName = rec.indexOf("name");
@@ -140,7 +159,7 @@ std::tuple<int, int, int, int> Database::getNameIndexes(const QSqlQuery& sqlQuer
     return { iName, iCodeEan, iQuantity, iUnitCode };
 }
 
-Product Database::fromSqlQuery(const QSqlQuery& sqlQuery, const std::tuple<int, int, int, int>& indexes) const noexcept
+Product Database::fromSqlQuery(const QSqlQuery& sqlQuery, const ColumnIdx& indexes) const noexcept
 {
     const auto& [iName, iCodeEan, iQuantity, iUnitCode] = indexes;
 
@@ -199,9 +218,6 @@ void Database::createProducts()
     QSqlQuery cur(this->db);
     if (!cur.exec(sql))
         throw SqlCreationTableError(cur.lastError());
-
-    if (!cur.exec("CREATE INDEX IF NOT EXISTS idx_products_code_ean ON products(codeEan)"))
-        throw SqlCreationIndexError(cur.lastError());
 }
 
 void Database::createTrash()
@@ -220,9 +236,6 @@ void Database::createTrash()
     QSqlQuery cur(this->db);
     if (!cur.exec(sql))
         throw SqlCreationTableError(cur.lastError());
-
-    if (!cur.exec("CREATE INDEX IF NOT EXISTS idx_trash_code_ean ON trash(codeEan)"))
-        throw SqlCreationIndexError(cur.lastError());
 }
 
 void Database::transaction()
@@ -239,5 +252,5 @@ void Database::commit()
 
 ScopeExit Database::makeRollbackGuard()
 {
-    return ScopeExit([&db=db]()->void{ db.rollback(); });
+    return ScopeExit([&db = this->db]()->void{ db.rollback(); });
 }
