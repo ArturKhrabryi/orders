@@ -143,6 +143,23 @@ void Database::moveToTrash(const Product& product)
         if (!cur.exec())
             throw SqlMoveToTrashError(cur.lastError());
     }
+    else
+    {
+        QString sql = "INSERT OR IGNORE INTO trash (name, codeEan, quantity, unitCode) SELECT name, codeEan, quantity, unitCode FROM products WHERE name=?";
+        QSqlQuery cur(this->db);
+        cur.prepare(sql);
+        cur.addBindValue(product.name);
+
+        if (!cur.exec())
+            throw SqlMoveToTrashError(cur.lastError());
+
+        sql = "DELETE FROM products where name=?";
+        cur.prepare(sql);
+        cur.addBindValue(product.name);
+
+        if (!cur.exec())
+            throw SqlMoveToTrashError(cur.lastError());
+    } 
 
     this->commit();
     rollbackGuard.release();

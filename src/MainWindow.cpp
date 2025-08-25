@@ -232,25 +232,48 @@ void MainWindow::handleDeleteButton() noexcept
         {
             ok = false;
             auto nameText = QInputDialog::getText(this, "Wprowadź nazwę", "Nazwa:", QLineEdit::Normal, "", &ok);
-            auto products = this->db.fetchByName(this->normalize(nameText)); 
+            if (ok)
+            {
+                auto products = this->db.fetchByName(this->normalize(nameText)); 
 
-             
+                if (products.empty())
+                {
+                    QMessageBox::information(this, "Nie ma towaru", "Nie ma towaru - nic do usunięcia");
+                    
+                    return;
+                }
+
+                if (products.size() > 1)
+                {
+                    QMessageBox::information(this, "Za dużo towarów", "Towarów więcej niż jeden, proszę sprecyzować nazwę");
+                    
+                    return;
+                }
+
+                this->db.moveToTrash(products[0]);
+                this->updateView();
+
+                QMessageBox::information(this, "Usunięto towar", "Towar został pomyślnie usunięty");
+            }
 
             return;
         }
 
         CodeEan codeEan(codeEanText);
         auto product = this->db.fetchByCodeEan(codeEan);    
-        if (product)
+        if (!product)
         {
-            this->db.moveToTrash(*product);
-
-            QMessageBox::information(this, "Usunięto towar", "Towar został pomyślnie usunięty");
-
-            this->updateView(); 
+            QMessageBox::information(this, "Nie ma towaru", "Nie ma towaru - nic do usunięcia");
 
             return;
         }
+
+        this->db.moveToTrash(*product);
+        this->updateView(); 
+
+        QMessageBox::information(this, "Usunięto towar", "Towar został pomyślnie usunięty");
+
+        return;
     }
     catch (const SqlError& ex)
     {
