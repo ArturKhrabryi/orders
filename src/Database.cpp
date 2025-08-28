@@ -128,7 +128,7 @@ void Database::moveToTrash(const Product& product)
 
     if (product.codeEan)
     {
-        QString sql = "INSERT OR IGNORE INTO trash (name, codeEan, quantity, unitCode) SELECT name, codeEan, quantity, unitCode FROM products WHERE codeEan=?";
+        QString sql = "INSERT OR REPLACE INTO trash (name, codeEan, quantity, unitCode) SELECT name, codeEan, quantity, unitCode FROM products WHERE codeEan=?";
         QSqlQuery cur(this->db);
         cur.prepare(sql);
         cur.addBindValue(product.codeEan->getValue());
@@ -160,6 +160,24 @@ void Database::moveToTrash(const Product& product)
         if (!cur.exec())
             throw SqlMoveToTrashError(cur.lastError());
     } 
+
+    this->commit();
+    rollbackGuard.release();
+}
+
+void Database::moveAllToTrash()
+{
+    this->transaction();
+    auto rollbackGuard = this->makeRollbackGuard();
+
+    QString sql = "INSERT OR REPLACE INTO trash (name, codeEan, quantity, unitCode) SELECT name, codeEan, quantity, unitCode FROM products";
+    QSqlQuery cur(this->db);
+    if (!cur.exec(sql))
+        throw SqlMoveToTrashError(cur.lastError());
+
+    sql = "DELETE FROM products";
+    if (!cur.exec(sql))
+        throw SqlMoveToTrashError(cur.lastError());
 
     this->commit();
     rollbackGuard.release();

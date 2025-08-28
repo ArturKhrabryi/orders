@@ -291,5 +291,26 @@ void MainWindow::handleDeleteButton() noexcept
 
 void MainWindow::handleClearButton() noexcept
 {
-
+    auto reply = QMessageBox::question(this, "Potwierdzenie", "Czy na pewno usunąć bazę?", QMessageBox::Yes | QMessageBox::No); 
+    if (reply == QMessageBox::Yes)
+    {
+        try
+        {
+            this->db.moveAllToTrash();
+            this->updateView();
+            QMessageBox::information(this, "Usunięto bazę", "Towary zostały pomyślnie usunięte");
+        }
+        catch (const SqlError& ex)
+        {
+            QMessageBox::information(this, "Błąd w bazie towarów", ex.what());
+        }
+        catch (const std::exception& ex)
+        {
+            QMessageBox::information(this, "Błąd", ex.what());
+        }
+        catch (...)
+        {
+            QMessageBox::information(this, "Niewiadomy błąd", "Niewiadomy błąd");
+        }
+    }
 }
