@@ -4,40 +4,40 @@
 #include <QSqlRecord>
 #include <QSqlError>
 #include <qmessagebox.h>
+#include <qnamespace.h>
 #include <qsqlquery.h>
 #include "Product.hpp"
 
 
-Database::Database() : db(QSqlDatabase::addDatabase("QSQLITE"))
+Database::Database() :
+    db(QSqlDatabase::addDatabase("QSQLITE")),
+    model(nullptr, db)
 {
     this->db.setDatabaseName("zamówienie.db");
     if (!this->db.open())
         throw SqlOpenDatabaseError(this->db.lastError());
-    
-    this->transaction();
-    auto rollbackGuard = this->makeRollbackGuard();
 
     QSqlQuery cur(this->db);
     if (!cur.exec("PRAGMA foreign_keys = ON"))
         throw SqlEnableForeignKeysError(cur.lastError());
+
+    this->transaction();
+    auto rollbackGuard = this->makeRollbackGuard();
 
     this->createUnits();
     this->createProducts();
     this->createTrash();
 
     this->commit();
-
     rollbackGuard.release();
+
+    this->model.select();
 }
 
 Database::~Database()
 {
     if (this->db.isOpen())
         this->db.close();
-
-    auto name = this->db.connectionName();
-    this->db = QSqlDatabase();
-    QSqlDatabase::removeDatabase(name);
 }
 
 std::optional<Product> Database::fetchByCodeEan(const CodeEan& codeEan) const

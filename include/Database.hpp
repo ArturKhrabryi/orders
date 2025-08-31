@@ -3,10 +3,10 @@
 #include <QSqlDatabase>
 #include <QSqlQuery>
 #include <QSqlError>
-#include <qsqlquery.h>
 #include <stdexcept>
 #include <vector>
 #include "CodeEan.hpp"
+#include "DatabaseProductsModel.hpp"
 #include "ScopeExit.hpp"
 
 
@@ -106,6 +106,8 @@ public:
     Database();
     ~Database(); 
 
+    DatabaseProductsModel* getModel() noexcept { return &this->model; }
+
     std::optional<Product> fetchByCodeEan(const CodeEan& codeEan) const;
     std::vector<Product> fetchByName(const QString& name) const;
     std::vector<Product> fetch() const;
@@ -117,6 +119,7 @@ public:
 
 private:
     QSqlDatabase db;
+    DatabaseProductsModel model;
 
     ColumnIdx getNameIndexes(const QSqlQuery& sqlQuery) const noexcept;
     Product fromSqlQuery(const QSqlQuery& sqlQuery, const ColumnIdx& indexes = { 1, 2, 3, 4 }) const noexcept;

@@ -12,13 +12,17 @@ int main(int argc, char* argv[])
         window.show();
 
         return app.exec();
+    }
+    catch (const std::exception& ex)
+    {
+        QMessageBox::critical(nullptr, "Fatal", ex.what());
 
-    } catch (const std::exception& e) {
-        QMessageBox::critical(nullptr, "Fatal", e.what());
         return 1;
-
-    } catch (...) {
+    }
+    catch (...)
+    {
         QMessageBox::critical(nullptr, "Fatal", "Unknown fatal error");
+
         return 1;
     }
 }

@@ -2,16 +2,15 @@
 
 #include <QMainWindow>
 #include <optional>
-#include "Database.hpp"
 #include "Product.hpp"
 #include "CodeEan.hpp"
+#include "Database.hpp"
 
 
 class QWidget;
-class QTextEdit;
+class QTableView;
 class QLineEdit;
 class QPushButton;
-
 
 class MainWindow : public QMainWindow
 {
@@ -28,17 +27,17 @@ private slots:
     void handleBarcodeGenerationButton() noexcept;
 
 private:
-    QWidget* central = nullptr;
-    QTextEdit* view = nullptr;
-    QLineEdit* nameForm = nullptr;
-    QLineEdit* codeEanForm = nullptr;
-    QLineEdit* quantityForm = nullptr;
-    QLineEdit* unitCodeForm = nullptr;
-    QPushButton* enterButton = nullptr;
-    QPushButton* convertButton = nullptr;
-    QPushButton* deleteButton = nullptr;
-    QPushButton* clearButton = nullptr;
-    QPushButton* barcodeGenerationButton = nullptr;
+    QWidget* central;
+    QTableView* view;
+    QLineEdit* nameForm;
+    QLineEdit* codeEanForm;
+    QLineEdit* quantityForm;
+    QLineEdit* unitCodeForm;
+    QPushButton* enterButton;
+    QPushButton* convertButton;
+    QPushButton* deleteButton;
+    QPushButton* clearButton;
+    QPushButton* barcodeGenerationButton;
 
     Database db;
 

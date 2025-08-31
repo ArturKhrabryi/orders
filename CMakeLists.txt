@@ -98,7 +98,7 @@ find_package(Qt6 6 REQUIRED COMPONENTS Widgets Sql)
 qt_standard_project_setup()
 
 file (GLOB SOURCES CONFIGURE_DEPENDS src/*.cpp)
-list (APPEND SOURCES include/MainWindow.hpp)
+list (APPEND SOURCES include/MainWindow.hpp include/DatabaseProductsModel.hpp)
 
 if (WIN32)
     add_executable(${PROJECT_NAME} WIN32 ${SOURCES})

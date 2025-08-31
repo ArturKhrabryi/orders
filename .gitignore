@@ -2,3 +2,4 @@ build/
 .cache/
 compile.sh
 compile.sh
+compile_commands.json

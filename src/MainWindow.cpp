@@ -1,4 +1,5 @@
 #include "MainWindow.hpp"
+#include "CodeEan.hpp"
 #include "Product.hpp"
 #include <QTextEdit>
 #include <QLabel>
@@ -8,22 +9,22 @@
 #include <QHBoxLayout>
 #include <QMessageBox>
 #include <QShortcut>
+#include <QTableView>
 #include <QProcess>
 #include <QCoreApplication>
 #include <QInputDialog>
 #include <exception>
 #include <optional>
-#include <qcontainerfwd.h>
-#include <qinputdialog.h>
-#include <qmessagebox.h>
-#include <qpushbutton.h>
+#include <QHeaderView>
+#include <QTableView>
 #include <stdexcept>
+#include "Database.hpp"
 
 
 MainWindow::MainWindow(QWidget* parent) :
 	QMainWindow(parent),
     central(new QWidget(this)),
-    view(new QTextEdit(central)),
+    view(new QTableView(central)),
     nameForm(new QLineEdit(central)),
     codeEanForm(new QLineEdit(central)),
     quantityForm(new QLineEdit(central)),
@@ -37,7 +38,16 @@ MainWindow::MainWindow(QWidget* parent) :
 	this->setCentralWidget(this->central);
 
 	auto* mainLayout = new QVBoxLayout(this->central);
-    this->view->setReadOnly(true);
+    this->view->setModel(this->db.getModel());
+    this->view->setColumnHidden(0, true);
+    this->view->setSelectionBehavior(QAbstractItemView::SelectItems);
+    this->view->setSelectionMode(QAbstractItemView::SingleSelection);
+    this->view->setEditTriggers(QAbstractItemView::DoubleClicked);
+    this->view->verticalHeader()->setVisible(false);
+    this->view->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    this->view->setAlternatingRowColors(true);
+    this->view->setItemDelegateForColumn(2, new DatabaseProductsModel::EanDelegate(this->view));
+
 	mainLayout->addWidget(this->view);
     auto* nameLabel = new QLabel("&Nazwa:", this->central);
     nameLabel->setBuddy(this->nameForm);
@@ -71,15 +81,13 @@ MainWindow::MainWindow(QWidget* parent) :
 	this->setWindowTitle("Zamówienia");
 
     this->setPlaceholders();
+    this->nameForm->setFocus();
 
 	this->connect(this->enterButton, &QPushButton::clicked, this, &MainWindow::handleEnterButton);
 	this->connect(this->convertButton, &QPushButton::clicked, this, &MainWindow::handleConvertButton);
 	this->connect(this->deleteButton, &QPushButton::clicked, this, &MainWindow::handleDeleteButton);
 	this->connect(this->clearButton, &QPushButton::clicked, this, &MainWindow::handleClearButton);
 	this->connect(this->barcodeGenerationButton, &QPushButton::clicked, this, &MainWindow::handleBarcodeGenerationButton);
-
-    this->updateView();
-    this->nameForm->setFocus();
 }
 
 void MainWindow::setPlaceholders() noexcept
@@ -106,11 +114,9 @@ void MainWindow::clearForms() noexcept
 
 void MainWindow::updateView()
 {
-    this->view->clear();
-
-    auto products = this->db.fetch(); 
-    for (auto& product : products)
-        this->view->append(static_cast<QString>(product));
+    auto* databaseModel = qobject_cast<QSqlTableModel*>(view->model());
+    if (databaseModel)
+        databaseModel->select();
 }
 
 Product MainWindow::getProductFromForms() const
@@ -172,7 +178,7 @@ void MainWindow::handleEnterButton() noexcept
     {
         auto product = this->getProductFromForms();
         this->db.add(product);
-        this->view->append(product);
+        this->updateView();
         this->clearForms();
         this->nameForm->setFocus();
     }
@@ -325,9 +331,20 @@ void MainWindow::handleClearButton() noexcept
 
 void MainWindow::handleBarcodeGenerationButton() noexcept
 {
-    QString codeEan = QInputDialog::getText(const_cast<MainWindow*>(this), "Wprowadź kod kreskowy", "Kod kreskowy:");
-    if (codeEan.isEmpty())
+    auto codeEanText = QInputDialog::getText(this, "Wprowadź kod kreskowy", "Kod kreskowy:");
+    if (codeEanText.isEmpty())
         return;
+
+    try
+    {
+        CodeEan codeEan(codeEanText);
+    }
+    catch(const std::exception& ex)
+    {
+        QMessageBox::warning(this, "Zły kod kreskowy", QString("Błąd: ") + ex.what());
+
+        return;
+    }
 
     QString filename = QInputDialog::getText(const_cast<MainWindow*>(this), "Wprowadź nazwę pliku", "Nazwa pliku:");
     if (filename.isEmpty())
@@ -338,7 +355,7 @@ void MainWindow::handleBarcodeGenerationButton() noexcept
 
     generation.setProgram(program);
     QStringList args;
-    args << "-f" << filename << "-e" << codeEan;
+    args << "-f" << filename << "-e" << codeEanText;
     generation.setArguments(args);
     generation.setProcessChannelMode(QProcess::MergedChannels);
     generation.setWorkingDirectory(QCoreApplication::applicationDirPath());
