@@ -13,7 +13,9 @@
 #include <QInputDialog>
 #include <exception>
 #include <optional>
+#include <qcontainerfwd.h>
 #include <qmessagebox.h>
+#include <qpushbutton.h>
 #include <stdexcept>
 
 
@@ -28,7 +30,8 @@ MainWindow::MainWindow(QWidget* parent) :
     enterButton(new QPushButton(central)),
     convertButton(new QPushButton(central)),
     deleteButton(new QPushButton(central)),
-    clearButton(new QPushButton(central))
+    clearButton(new QPushButton(central)),
+    barcodeGenerationButton(new QPushButton(central))
 {
 	this->setCentralWidget(this->central);
 
@@ -60,6 +63,7 @@ MainWindow::MainWindow(QWidget* parent) :
     auto* logicLayout = new QHBoxLayout;
     logicLayout->addWidget(this->enterButton);
     logicLayout->addWidget(this->convertButton);
+    logicLayout->addWidget(this->barcodeGenerationButton);
     mainLayout->addLayout(logicLayout);
 
 	this->resize(300, 400);
@@ -71,6 +75,7 @@ MainWindow::MainWindow(QWidget* parent) :
 	this->connect(this->convertButton, &QPushButton::clicked, this, &MainWindow::handleConvertButton);
 	this->connect(this->deleteButton, &QPushButton::clicked, this, &MainWindow::handleDeleteButton);
 	this->connect(this->clearButton, &QPushButton::clicked, this, &MainWindow::handleClearButton);
+	this->connect(this->barcodeGenerationButton, &QPushButton::clicked, this, &MainWindow::handleBarcodeGenerationButton);
 
     this->updateView();
 }
@@ -86,6 +91,7 @@ void MainWindow::setPlaceholders() noexcept
     this->convertButton->setText("&Konwertuj w plik excel");
     this->deleteButton->setText("Usuń &jeden towar z bazy");
     this->clearButton->setText("Usuń &wszystkie towary z bazy");
+    this->barcodeGenerationButton->setText("&Generuj kod kreskowy");
 }
 
 void MainWindow::clearForms() noexcept
@@ -177,7 +183,7 @@ void MainWindow::handleEnterButton() noexcept
     }
 }
 
-void MainWindow::handleConvertButton() noexcept
+void MainWindow::handleConvertButton() const noexcept
 {
     QProcess convertion;
     const QString program = QCoreApplication::applicationDirPath() + "/toOds";
@@ -312,5 +318,49 @@ void MainWindow::handleClearButton() noexcept
         {
             QMessageBox::information(this, "Niewiadomy błąd", "Niewiadomy błąd");
         }
+    }
+}
+
+void MainWindow::handleBarcodeGenerationButton() const noexcept
+{
+    QProcess generation;
+    const QString program = QCoreApplication::applicationDirPath() + "/barcodeGenerator";
+
+    generation.setProgram(program);
+    QStringList args;
+    args << "-f" << "example" << "-e" << "1234567891019";
+    generation.setArguments(args);
+    generation.setProcessChannelMode(QProcess::MergedChannels);
+    generation.setWorkingDirectory(QCoreApplication::applicationDirPath());
+
+    generation.start();
+    QString msgBoxTitle = "Wynik generacji";
+    if (!generation.waitForStarted(3000))
+    {
+        QMessageBox::warning(this->central, msgBoxTitle, "Nie udało się uruchomić generatora: " + generation.errorString());
+
+        return;
+    }
+
+    if (!generation.waitForFinished(3 * 60 * 1000))
+    {
+        generation.kill();
+        generation.waitForFinished();
+        QMessageBox::warning(this->central,msgBoxTitle, "Przekroczono limit czasu wykonywania.");
+
+        return;
+    }
+
+    const int exitCode = generation.exitCode();
+    const auto exitStatus = generation.exitStatus();
+    const auto mergedOutput = QString::fromLocal8Bit(generation.readAllStandardOutput());
+    
+    if (exitStatus == QProcess::NormalExit && exitCode == 0)
+        QMessageBox::information(this->central, msgBoxTitle, "Zakończono pomyślnie: " + mergedOutput);
+
+    else
+    {
+        QString msgBoxBody = "Coś poszło nie tak: " + mergedOutput + "\nKod wyjścia: " + QString::number(exitCode);
+        QMessageBox::warning(this->central, msgBoxTitle, msgBoxBody);
     }
 }

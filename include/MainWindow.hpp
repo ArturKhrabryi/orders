@@ -22,9 +22,10 @@ public:
 
 private slots:
     void handleEnterButton() noexcept;
-    void handleConvertButton() noexcept;
+    void handleConvertButton() const noexcept;
     void handleDeleteButton() noexcept;
     void handleClearButton() noexcept;
+    void handleBarcodeGenerationButton() const noexcept;
 
 private:
     QWidget* central = nullptr;
@@ -37,6 +38,7 @@ private:
     QPushButton* convertButton = nullptr;
     QPushButton* deleteButton = nullptr;
     QPushButton* clearButton = nullptr;
+    QPushButton* barcodeGenerationButton = nullptr;
 
     Database db;
 

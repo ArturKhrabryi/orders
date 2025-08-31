@@ -1,39 +1,36 @@
 cmake_minimum_required(VERSION 3.28 FATAL_ERROR)
 project(orders LANGUAGES CXX VERSION 0.1.0)
 
-option(BUILD_TO_ODS "Build python toOds converter with pyinstaller" ON)
+option(BUILD_TO_ODS "Build python to ods converter with pyinstaller" ON)
+option(BUILD_BARCODE_GENERATOR "Build python barcode generator with pyinstaller" ON)
+
+if (BUILD_TO_ODS OR BUILD_BARCODE_GENERATOR)
+    include(cmake/PythonVenv.cmake)
+    ensure_shared_venv(VENV_DIR PY_EXE PIP_EXE VENV_MARKER)
+endif()
 
 if (BUILD_TO_ODS)
-    find_package(Python3 REQUIRED COMPONENTS Interpreter)
     set(TO_ODS_ENTRY "${CMAKE_SOURCE_DIR}/python/toOds.py")
-    set(TO_ODS_REQS "${CMAKE_SOURCE_DIR}/python/requirements.txt")
-    set(VENV_DIR "${CMAKE_BINARY_DIR}/pyenv")
+    set(TO_ODS_REQS "${CMAKE_SOURCE_DIR}/python/to_ods_requirements.txt")
+    set(TO_ODS_DIST "${CMAKE_BINARY_DIR}/pydist")
+    set(TO_ODS_WORK "${CMAKE_BINARY_DIR}/pybuild_toOds")
+    set(TO_ODS_SPEC "${CMAKE_BINARY_DIR}/pyspec_toOds")
 
     if (WIN32)
-        set(PY_EXE "${VENV_DIR}/Scripts/python.exe")
-        set(PIP_EXE "${VENV_DIR}/Scripts/pip.exe")
-        set(TO_ODS_OUT "${CMAKE_BINARY_DIR}/pydist/toOds.exe")
+        set(TO_ODS_OUT "${TO_ODS_DIST}/toOds.exe")
     else()
-        set(PY_EXE "${VENV_DIR}/bin/python")
-        set(PIP_EXE "${VENV_DIR}/bin/pip")
-        set(TO_ODS_OUT "${CMAKE_BINARY_DIR}/pydist/toOds")
+        set(TO_ODS_OUT "${TO_ODS_DIST}/toOds")
     endif() 
 
     add_custom_command(
         OUTPUT "${TO_ODS_OUT}"
-        BYPRODUCTS
-            "${CMAKE_BINARY_DIR}/pyspec/toOds.spec"
+        BYPRODUCTS "${TO_ODS_SPEC}/toOds.spec"
         DEPENDS
             "${TO_ODS_ENTRY}"
             "${TO_ODS_REQS}"
+            "${VENV_MARKER}"
 
-        COMMAND "${CMAKE_COMMAND}" -E echo "Creating venv"
-        COMMAND "${Python3_EXECUTABLE}" -m venv "${VENV_DIR}"
-
-        COMMAND "${CMAKE_COMMAND}" -E echo "Upgrading tools"
-        COMMAND "${PY_EXE}" -m pip install --upgrade pip setuptools wheel
-
-        COMMAND "${CMAKE_COMMAND}" -E echo "Installing dependencies"
+        COMMAND "${CMAKE_COMMAND}" -E echo "Installing toOds deps"
         COMMAND "${PIP_EXE}" install -r "${TO_ODS_REQS}"
         COMMAND "${PIP_EXE}" install pyinstaller
 
@@ -43,15 +40,57 @@ if (BUILD_TO_ODS)
             --clean
             --noconfirm
             --name "toOds"
-            --distpath "${CMAKE_BINARY_DIR}/pydist"
-            --workpath "${CMAKE_BINARY_DIR}/pybuild"
-            --specpath "${CMAKE_BINARY_DIR}/pyspec"
+            --distpath "${TO_ODS_DIST}"
+            --workpath "${TO_ODS_WORK}"
+            --specpath "${TO_ODS_SPEC}"
             "${TO_ODS_ENTRY}"
-        VERBATIM
+            VERBATIM USES_TERMINAL
     )
     
     add_custom_target(${PROJECT_NAME}_toOds ALL DEPENDS "${TO_ODS_OUT}")
+    add_dependencies(${PROJECT_NAME}_toOds py_venv)
+endif()
 
+if (BUILD_BARCODE_GENERATOR)
+    set(BARCODE_GENERATOR_ENTRY "${CMAKE_SOURCE_DIR}/python/barcodeGenerator.py")
+    set(BARCODE_GENERATOR_REQS "${CMAKE_SOURCE_DIR}/python/barcode_generator_requirements.txt")
+    set(BARCODE_GENERATOR_DIST "${CMAKE_BINARY_DIR}/pydist")
+    set(BARCODE_GENERATOR_WORK "${CMAKE_BINARY_DIR}/pybuild_barcodeGenerator")
+    set(BARCODE_GENERATOR_SPEC "${CMAKE_BINARY_DIR}/pyspec_barcodeGenerator")
+
+    if (WIN32)
+        set(BARCODE_GENERATOR_OUT "${BARCODE_GENERATOR_DIST}/barcodeGenerator.exe")
+    else()
+        set(BARCODE_GENERATOR_OUT "${BARCODE_GENERATOR_DIST}/barcodeGenerator")
+    endif() 
+
+    add_custom_command(
+        OUTPUT "${BARCODE_GENERATOR_OUT}"
+        BYPRODUCTS "${BARCODE_GENERATOR_SPEC}/barcodeGenerator.spec"
+        DEPENDS
+            "${BARCODE_GENERATOR_ENTRY}"
+            "${BARCODE_GENERATOR_REQS}"
+            "${VENV_MARKER}"
+
+        COMMAND "${CMAKE_COMMAND}" -E echo "Installing barcodeGenerator deps"
+        COMMAND "${PIP_EXE}" install -r "${BARCODE_GENERATOR_REQS}"
+        COMMAND "${PIP_EXE}" install pyinstaller
+
+        COMMAND "${CMAKE_COMMAND}" -E echo "Packaging barcodeGenerator with Pyinstaller"
+        COMMAND "${PY_EXE}" -m PyInstaller
+            --onefile
+            --clean
+            --noconfirm
+            --name "barcodeGenerator"
+            --distpath "${BARCODE_GENERATOR_DIST}"
+            --workpath "${BARCODE_GENERATOR_WORK}"
+            --specpath "${BARCODE_GENERATOR_SPEC}"
+            "${BARCODE_GENERATOR_ENTRY}"
+            VERBATIM USES_TERMINAL
+    )
+    
+    add_custom_target(${PROJECT_NAME}_barcodeGenerator ALL DEPENDS "${BARCODE_GENERATOR_OUT}")
+    add_dependencies(${PROJECT_NAME}_barcodeGenerator py_venv)
 endif()
 
 find_package(Qt6 6 REQUIRED COMPONENTS Widgets Sql)
@@ -77,15 +116,26 @@ if (BUILD_TO_ODS)
     install(PROGRAMS "${TO_ODS_OUT}" DESTINATION bin COMPONENT toOds)
 endif()
 
-if (TARGET install AND BUILD_TO_ODS)
-    add_dependencies(install ${PROJECT_NAME}_toOds)
+if (BUILD_BARCODE_GENERATOR)
+    install(PROGRAMS "${BARCODE_GENERATOR_OUT}" DESTINATION bin COMPONENT barcodeGenerator)
 endif()
+
+if (TARGET install)
+    if (BUILD_TO_ODS)
+        add_dependencies(install ${PROJECT_NAME}_toOds)
+    endif()
+
+    if (BUILD_BARCODE_GENERATOR)
+        add_dependencies(install ${PROJECT_NAME}_barcodeGenerator)
+    endif()
+endif()
+
 
 set(CPACK_PACKAGE_NAME ${PROJECT_NAME})
 set(CPACK_PACKAGE_VENDOR "Arturchik")
 set(CPACK_PACKAGE_CONTACT "khrabryiartur2002@gmail.com")
 set(CPACK_PACKAGE_VERSION "${PROJECT_VERSION}")
-set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "orders: Qt GUI app + toOds (PyInstaller)")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "orders: Qt GUI app + toOds + barcodeGenerator (PyInstaller)")
 set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/LICENSE")
 
 set(CPACK_GENERATOR "TGZ;ZIP")
@@ -96,7 +146,12 @@ if (BUILD_TO_ODS)
     list(APPEND CPACK_COMPONENTS_ALL toOds)
 endif()
 
+if (BUILD_BARCODE_GENERATOR)
+    list(APPEND CPACK_COMPONENTS_ALL barcodeGenerator)
+endif()
+
 set(CPACK_COMPONENT_MAIN_DISPLAY_NAME "C++ main GUI")
 set(CPACK_COMPONENT_TOODS_DISPLAY_NAME "python to ods converter")
+set(CPACK_COMPONENT_BARCODEGENERATOR_DISPLAY_NAME "python barcode generator")
 
 include(CPack)
