@@ -14,6 +14,7 @@
 #include <exception>
 #include <optional>
 #include <qcontainerfwd.h>
+#include <qinputdialog.h>
 #include <qmessagebox.h>
 #include <qpushbutton.h>
 #include <stdexcept>
@@ -78,6 +79,7 @@ MainWindow::MainWindow(QWidget* parent) :
 	this->connect(this->barcodeGenerationButton, &QPushButton::clicked, this, &MainWindow::handleBarcodeGenerationButton);
 
     this->updateView();
+    this->nameForm->setFocus();
 }
 
 void MainWindow::setPlaceholders() noexcept
@@ -321,14 +323,22 @@ void MainWindow::handleClearButton() noexcept
     }
 }
 
-void MainWindow::handleBarcodeGenerationButton() const noexcept
+void MainWindow::handleBarcodeGenerationButton() noexcept
 {
+    QString codeEan = QInputDialog::getText(const_cast<MainWindow*>(this), "Wprowadź kod kreskowy", "Kod kreskowy:");
+    if (codeEan.isEmpty())
+        return;
+
+    QString filename = QInputDialog::getText(const_cast<MainWindow*>(this), "Wprowadź nazwę pliku", "Nazwa pliku:");
+    if (filename.isEmpty())
+        return;
+
     QProcess generation;
     const QString program = QCoreApplication::applicationDirPath() + "/barcodeGenerator";
 
     generation.setProgram(program);
     QStringList args;
-    args << "-f" << "example" << "-e" << "1234567891019";
+    args << "-f" << filename << "-e" << codeEan;
     generation.setArguments(args);
     generation.setProcessChannelMode(QProcess::MergedChannels);
     generation.setWorkingDirectory(QCoreApplication::applicationDirPath());
@@ -364,3 +374,4 @@ void MainWindow::handleBarcodeGenerationButton() const noexcept
         QMessageBox::warning(this->central, msgBoxTitle, msgBoxBody);
     }
 }
+

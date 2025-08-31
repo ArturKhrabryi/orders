@@ -25,7 +25,7 @@ private slots:
     void handleConvertButton() const noexcept;
     void handleDeleteButton() noexcept;
     void handleClearButton() noexcept;
-    void handleBarcodeGenerationButton() const noexcept;
+    void handleBarcodeGenerationButton() noexcept;
 
 private:
     QWidget* central = nullptr;
