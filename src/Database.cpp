@@ -3,6 +3,7 @@
 #include <QString>
 #include <QSqlRecord>
 #include <QSqlError>
+#include <qmessagebox.h>
 #include <qsqlquery.h>
 #include "Product.hpp"
 
@@ -39,34 +40,59 @@ Database::~Database()
     QSqlDatabase::removeDatabase(name);
 }
 
-std::vector<Product> Database::fetchProducts() const
+std::optional<Product> Database::fetchByCodeEan(const CodeEan& codeEan) const
+{
+    QString sql = "SELECT name, codeEan, quantity, unitCode FROM products WHERE codeEan=?";
+    QSqlQuery cur(this->db);
+    cur.setForwardOnly(true);
+    cur.prepare(sql);
+    cur.addBindValue(codeEan.getValue());
+
+    if (!cur.exec())
+        throw SqlFetchProductError(cur.lastError());
+
+    if (!cur.next())
+        return std::nullopt;
+
+    auto indexes = this->getNameIndexes(cur);
+    
+    return this->fromSqlQuery(cur, indexes);
+}
+
+std::vector<Product> Database::fetchByName(const QString& name) const
+{
+    QString sql = "SELECT name, codeEan, quantity, unitCode FROM products WHERE name LIKE ?";
+    QSqlQuery cur(this->db);
+    cur.setForwardOnly(true);
+    cur.prepare(sql);
+    cur.addBindValue("%" + name + "%");
+
+    if (!cur.exec())
+        throw SqlFetchProductError(cur.lastError());
+
+    std::vector<Product> products;
+    auto indexes = this->getNameIndexes(cur);
+    while (cur.next())
+        products.push_back(this->fromSqlQuery(cur, indexes));
+    
+    return products;
+}
+
+std::vector<Product> Database::fetch() const
 {
     QSqlQuery cur(this->db); 
     cur.setForwardOnly(true);
 
     const QString sql = "SELECT name, codeEan, quantity, unitCode FROM products ORDER BY id ASC";
     if (!cur.exec(sql))
-        throw SqlFetchProductsError(cur.lastError());
-
-    const auto rec = cur.record();
-    auto iName = rec.indexOf("name");
-    auto iCodeEan = rec.indexOf("codeEan");
-    auto iQuantity = rec.indexOf("quantity");
-    auto iUnitcode = rec.indexOf("unitCode");
+        throw SqlFetchProductError(cur.lastError());
 
     std::vector<Product> products;
     products.reserve(64);
+    auto indexes = this->getNameIndexes(cur);
     while (cur.next())
     {
-        Product product;
-        product.name = cur.value(iName).toString();
-        std::optional<CodeEan> codeEan = std::nullopt;
-        auto codeEanValue = cur.value(iCodeEan);
-        if (codeEanValue.isNull() || codeEanValue.toString().isEmpty())
-            codeEan = cur.value(iCodeEan).toString();
-        product.codeEan = std::move(codeEan);
-        product.quantity = cur.value(iQuantity).toFloat();
-        product.unitCode = cur.value(iUnitcode).toString();
+        auto product = this->fromSqlQuery(cur, indexes);
 
         products.push_back(std::move(product));
     }
@@ -74,13 +100,13 @@ std::vector<Product> Database::fetchProducts() const
     return products;
 }
 
-void Database::addProduct(const Product& product)
+void Database::add(const Product& product)
 {
     this->transaction();
     auto rollbackGuard = this->makeRollbackGuard();
 
 
-    QString sql =  "INSERT INTO products (name, codeEan, quantity, unitCode) VALUES (?, ?, ?, ?)";
+    QString sql = "INSERT INTO products (name, codeEan, quantity, unitCode) VALUES (?, ?, ?, ?)";
     QSqlQuery cur(this->db);
     cur.prepare(sql);
     cur.addBindValue(product.name);
@@ -93,6 +119,96 @@ void Database::addProduct(const Product& product)
 
     this->commit();
     rollbackGuard.release();
+}
+
+void Database::moveToTrash(const Product& product)
+{
+    this->transaction();
+    auto rollbackGuard = this->makeRollbackGuard();
+
+    if (product.codeEan)
+    {
+        QString sql = "INSERT OR REPLACE INTO trash (name, codeEan, quantity, unitCode) SELECT name, codeEan, quantity, unitCode FROM products WHERE codeEan=?";
+        QSqlQuery cur(this->db);
+        cur.prepare(sql);
+        cur.addBindValue(product.codeEan->getValue());
+
+        if (!cur.exec())
+            throw SqlMoveToTrashError(cur.lastError());
+
+        sql = "DELETE FROM products where codeEan=?";
+        cur.prepare(sql);
+        cur.addBindValue(product.codeEan->getValue());
+
+        if (!cur.exec())
+            throw SqlMoveToTrashError(cur.lastError());
+    }
+    else
+    {
+        QString sql = "INSERT OR IGNORE INTO trash (name, codeEan, quantity, unitCode) SELECT name, codeEan, quantity, unitCode FROM products WHERE name=?";
+        QSqlQuery cur(this->db);
+        cur.prepare(sql);
+        cur.addBindValue(product.name);
+
+        if (!cur.exec())
+            throw SqlMoveToTrashError(cur.lastError());
+
+        sql = "DELETE FROM products where name=?";
+        cur.prepare(sql);
+        cur.addBindValue(product.name);
+
+        if (!cur.exec())
+            throw SqlMoveToTrashError(cur.lastError());
+    } 
+
+    this->commit();
+    rollbackGuard.release();
+}
+
+void Database::moveAllToTrash()
+{
+    this->transaction();
+    auto rollbackGuard = this->makeRollbackGuard();
+
+    QString sql = "INSERT OR REPLACE INTO trash (name, codeEan, quantity, unitCode) SELECT name, codeEan, quantity, unitCode FROM products";
+    QSqlQuery cur(this->db);
+    if (!cur.exec(sql))
+        throw SqlMoveToTrashError(cur.lastError());
+
+    sql = "DELETE FROM products";
+    if (!cur.exec(sql))
+        throw SqlMoveToTrashError(cur.lastError());
+
+    this->commit();
+    rollbackGuard.release();
+}
+
+ColumnIdx Database::getNameIndexes(const QSqlQuery& sqlQuery) const noexcept
+{
+    const auto rec = sqlQuery.record();
+    auto iName = rec.indexOf("name");
+    auto iCodeEan = rec.indexOf("codeEan");
+    auto iQuantity = rec.indexOf("quantity");
+    auto iUnitCode = rec.indexOf("unitCode");
+
+    return { iName, iCodeEan, iQuantity, iUnitCode };
+}
+
+Product Database::fromSqlQuery(const QSqlQuery& sqlQuery, const ColumnIdx& indexes) const noexcept
+{
+    const auto& [iName, iCodeEan, iQuantity, iUnitCode] = indexes;
+
+    Product product;
+    product.name = sqlQuery.value(iName).toString();
+    std::optional<CodeEan> codeEan = std::nullopt;
+    auto codeEanValue = sqlQuery.value(iCodeEan);
+    if (!codeEanValue.isNull() && !codeEanValue.toString().isEmpty())
+        codeEan = CodeEan(sqlQuery.value(iCodeEan).toString());
+    product.codeEan = std::move(codeEan);
+    product.quantity = sqlQuery.value(iQuantity).toFloat();
+    product.unitCode = sqlQuery.value(iUnitCode).toString();
+
+    return product;
 }
 
 void Database::createUnits()
@@ -137,9 +253,6 @@ void Database::createProducts()
     QSqlQuery cur(this->db);
     if (!cur.exec(sql))
         throw SqlCreationTableError(cur.lastError());
-
-    if (!cur.exec("CREATE INDEX IF NOT EXISTS idx_products_code_ean ON products(codeEan)"))
-        throw SqlCreationIndexError(cur.lastError());
 }
 
 void Database::createTrash()
@@ -158,9 +271,6 @@ void Database::createTrash()
     QSqlQuery cur(this->db);
     if (!cur.exec(sql))
         throw SqlCreationTableError(cur.lastError());
-
-    if (!cur.exec("CREATE INDEX IF NOT EXISTS idx_trash_code_ean ON trash(codeEan)"))
-        throw SqlCreationIndexError(cur.lastError());
 }
 
 void Database::transaction()
@@ -177,5 +287,5 @@ void Database::commit()
 
 ScopeExit Database::makeRollbackGuard()
 {
-    return ScopeExit([&db=db]()->void{ db.rollback(); });
+    return ScopeExit([&db = this->db]()->void{ db.rollback(); });
 }

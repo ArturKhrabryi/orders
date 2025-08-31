@@ -28,7 +28,7 @@ struct InvalidEan13ChecksumError : public std::runtime_error
 class CodeEan
 {
 public:
-    CodeEan(const QString& codeEanText);
+    explicit CodeEan(const QString& codeEanText);
     const QString& getValue() const noexcept { return this->value; }
     static int calculateChecksum(QString codeEan);
     [[nodiscard]] static bool hasValidChecksum(const QString& codeEan);
