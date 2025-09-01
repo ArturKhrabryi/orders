@@ -13,22 +13,11 @@ class DatabaseProductsModel : public QSqlTableModel
 {
     Q_OBJECT
 
-protected:
-    QString selectStatement() const override
-    {
-        return "SELECT * FROM " + this->tableName();
-    }
-
 public:
     using QSqlTableModel::QSqlTableModel;
     DatabaseProductsModel(QObject* parent = nullptr, const QSqlDatabase& db = QSqlDatabase()) :
         QSqlTableModel(parent, db)
     {
-        this->setTable("products");
-        this->setEditStrategy(QSqlTableModel::OnFieldChange);
-
-        this->select();
-        
         this->setHeaderData(0, Qt::Horizontal, "Id");
         this->setHeaderData(1, Qt::Horizontal, "Nazwa");
         this->setHeaderData(2, Qt::Horizontal, "Kod Kreskowy");

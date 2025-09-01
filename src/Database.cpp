@@ -6,6 +6,7 @@
 #include <qmessagebox.h>
 #include <qnamespace.h>
 #include <qsqlquery.h>
+#include <stdexcept>
 #include "Product.hpp"
 
 
@@ -30,6 +31,11 @@ Database::Database() :
 
     this->commit();
     rollbackGuard.release();
+    
+    this->model.setTable("products");
+    this->model.setEditStrategy(QSqlTableModel::OnFieldChange);
+    if (!this->model.select())
+        throw std::runtime_error(model.lastError().text().toStdString());
 }
 
 Database::~Database()
