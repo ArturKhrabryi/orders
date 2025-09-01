@@ -22,9 +22,9 @@ public:
 private slots:
     void handleEnterButton() noexcept;
     void handleConvertButton() const noexcept;
-    void handleDeleteButton() noexcept;
     void handleClearButton() noexcept;
     void handleBarcodeGenerationButton() noexcept;
+    void handleDeleteItem() noexcept;
 
 private:
     QWidget* central;
@@ -35,7 +35,6 @@ private:
     QLineEdit* unitCodeForm;
     QPushButton* enterButton;
     QPushButton* convertButton;
-    QPushButton* deleteButton;
     QPushButton* clearButton;
     QPushButton* barcodeGenerationButton;
 
@@ -51,4 +50,6 @@ private:
     std::optional<CodeEan> getCodeEanFromForm() const;
     float getQuantityFromForm() const;
     QString getUnitCodeFromForm() const;
+
+    void createDeleteAction() noexcept;
 };

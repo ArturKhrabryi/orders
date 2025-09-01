@@ -114,7 +114,7 @@ public:
 
     void add(const Product& product);
 
-    void moveToTrash(const Product& product);
+    void moveToTrash(int id);
     void moveAllToTrash();
 
 private:

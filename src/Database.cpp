@@ -30,8 +30,6 @@ Database::Database() :
 
     this->commit();
     rollbackGuard.release();
-
-    this->model.select();
 }
 
 Database::~Database()
@@ -121,45 +119,25 @@ void Database::add(const Product& product)
     rollbackGuard.release();
 }
 
-void Database::moveToTrash(const Product& product)
+void Database::moveToTrash(int id)
 {
     this->transaction();
     auto rollbackGuard = this->makeRollbackGuard();
 
-    if (product.codeEan)
-    {
-        QString sql = "INSERT OR REPLACE INTO trash (name, codeEan, quantity, unitCode) SELECT name, codeEan, quantity, unitCode FROM products WHERE codeEan=?";
-        QSqlQuery cur(this->db);
-        cur.prepare(sql);
-        cur.addBindValue(product.codeEan->getValue());
+    QString sql = "INSERT OR REPLACE INTO trash (name, codeEan, quantity, unitCode) SELECT name, codeEan, quantity, unitCode FROM products WHERE id=?";
+    QSqlQuery cur(this->db);
+    cur.prepare(sql);
+    cur.addBindValue(id);
 
-        if (!cur.exec())
-            throw SqlMoveToTrashError(cur.lastError());
+    if (!cur.exec())
+        throw SqlMoveToTrashError(cur.lastError());
 
-        sql = "DELETE FROM products where codeEan=?";
-        cur.prepare(sql);
-        cur.addBindValue(product.codeEan->getValue());
+    sql = "DELETE FROM products where id=?";
+    cur.prepare(sql);
+    cur.addBindValue(id);
 
-        if (!cur.exec())
-            throw SqlMoveToTrashError(cur.lastError());
-    }
-    else
-    {
-        QString sql = "INSERT OR IGNORE INTO trash (name, codeEan, quantity, unitCode) SELECT name, codeEan, quantity, unitCode FROM products WHERE name=?";
-        QSqlQuery cur(this->db);
-        cur.prepare(sql);
-        cur.addBindValue(product.name);
-
-        if (!cur.exec())
-            throw SqlMoveToTrashError(cur.lastError());
-
-        sql = "DELETE FROM products where name=?";
-        cur.prepare(sql);
-        cur.addBindValue(product.name);
-
-        if (!cur.exec())
-            throw SqlMoveToTrashError(cur.lastError());
-    } 
+    if (!cur.exec())
+        throw SqlMoveToTrashError(cur.lastError());
 
     this->commit();
     rollbackGuard.release();

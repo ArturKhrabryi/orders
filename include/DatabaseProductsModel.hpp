@@ -4,6 +4,7 @@
 #include <QSqlTableModel>
 #include <QLineEdit>
 #include <QMessageBox>
+#include <qsqldatabase.h>
 #include "CodeEan.hpp"
 
 
@@ -15,15 +16,18 @@ class DatabaseProductsModel : public QSqlTableModel
 protected:
     QString selectStatement() const override
     {
-        return "SELECT id, name, codeEan, quantity, unitCode FROM " + this->tableName();
+        return "SELECT * FROM " + this->tableName();
     }
 
 public:
+    using QSqlTableModel::QSqlTableModel;
     DatabaseProductsModel(QObject* parent = nullptr, const QSqlDatabase& db = QSqlDatabase()) :
         QSqlTableModel(parent, db)
     {
         this->setTable("products");
         this->setEditStrategy(QSqlTableModel::OnFieldChange);
+
+        this->select();
         
         this->setHeaderData(0, Qt::Horizontal, "Id");
         this->setHeaderData(1, Qt::Horizontal, "Nazwa");

@@ -17,8 +17,13 @@
 #include <optional>
 #include <QHeaderView>
 #include <QTableView>
+#include <qabstractitemmodel.h>
+#include <qkeysequence.h>
+#include <qmessagebox.h>
+#include <qnamespace.h>
 #include <stdexcept>
 #include "Database.hpp"
+#include <QHeaderView>
 
 
 MainWindow::MainWindow(QWidget* parent) :
@@ -31,7 +36,6 @@ MainWindow::MainWindow(QWidget* parent) :
     unitCodeForm(new QLineEdit(central)),
     enterButton(new QPushButton(central)),
     convertButton(new QPushButton(central)),
-    deleteButton(new QPushButton(central)),
     clearButton(new QPushButton(central)),
     barcodeGenerationButton(new QPushButton(central))
 {
@@ -44,7 +48,12 @@ MainWindow::MainWindow(QWidget* parent) :
     this->view->setSelectionMode(QAbstractItemView::SingleSelection);
     this->view->setEditTriggers(QAbstractItemView::DoubleClicked);
     this->view->verticalHeader()->setVisible(false);
-    this->view->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    auto* header = this->view->horizontalHeader();
+    header->setStretchLastSection(false);
+    header->setSectionResizeMode(1, QHeaderView::Stretch);
+    header->setSectionResizeMode(2, QHeaderView::ResizeToContents);
+    header->setSectionResizeMode(3, QHeaderView::ResizeToContents);
+    header->setSectionResizeMode(4, QHeaderView::ResizeToContents);
     this->view->setAlternatingRowColors(true);
     this->view->setItemDelegateForColumn(2, new DatabaseProductsModel::EanDelegate(this->view));
 
@@ -53,7 +62,7 @@ MainWindow::MainWindow(QWidget* parent) :
     nameLabel->setBuddy(this->nameForm);
     mainLayout->addWidget(nameLabel);
     mainLayout->addWidget(this->nameForm);
-    auto* codeEanLabel = new QLabel("K&od kreskowy:", this->central);
+    auto* codeEanLabel = new QLabel("&Kod kreskowy:", this->central);
     codeEanLabel->setBuddy(this->codeEanForm);
     mainLayout->addWidget(codeEanLabel); 
     mainLayout->addWidget(this->codeEanForm);
@@ -61,21 +70,20 @@ MainWindow::MainWindow(QWidget* parent) :
     quantityLabel->setBuddy(this->quantityForm);
     mainLayout->addWidget(quantityLabel);
     mainLayout->addWidget(this->quantityForm);
-    auto* unitCodeLabel = new QLabel("J&ednostka", this->central);
+    auto* unitCodeLabel = new QLabel("&Jednostka", this->central);
     unitCodeLabel->setBuddy(this->unitCodeForm);
     mainLayout->addWidget(unitCodeLabel);
     mainLayout->addWidget(this->unitCodeForm);
 
-    auto* removeLayout = new QHBoxLayout;
-    removeLayout->addWidget(this->deleteButton);
-    removeLayout->addWidget(this->clearButton);
-    mainLayout->addLayout(removeLayout);
+    auto* firstLayout = new QHBoxLayout;
+    firstLayout->addWidget(this->enterButton);
+    firstLayout->addWidget(this->clearButton);
+    mainLayout->addLayout(firstLayout);
 
-    auto* logicLayout = new QHBoxLayout;
-    logicLayout->addWidget(this->enterButton);
-    logicLayout->addWidget(this->convertButton);
-    logicLayout->addWidget(this->barcodeGenerationButton);
-    mainLayout->addLayout(logicLayout);
+    auto* secondLayout = new QHBoxLayout;
+    secondLayout->addWidget(this->convertButton);
+    secondLayout->addWidget(this->barcodeGenerationButton);
+    mainLayout->addLayout(secondLayout);
 
 	this->resize(300, 400);
 	this->setWindowTitle("Zamówienia");
@@ -85,9 +93,12 @@ MainWindow::MainWindow(QWidget* parent) :
 
 	this->connect(this->enterButton, &QPushButton::clicked, this, &MainWindow::handleEnterButton);
 	this->connect(this->convertButton, &QPushButton::clicked, this, &MainWindow::handleConvertButton);
-	this->connect(this->deleteButton, &QPushButton::clicked, this, &MainWindow::handleDeleteButton);
 	this->connect(this->clearButton, &QPushButton::clicked, this, &MainWindow::handleClearButton);
 	this->connect(this->barcodeGenerationButton, &QPushButton::clicked, this, &MainWindow::handleBarcodeGenerationButton);
+
+    this->createDeleteAction();
+
+    this->updateView();
 }
 
 void MainWindow::setPlaceholders() noexcept
@@ -98,9 +109,8 @@ void MainWindow::setPlaceholders() noexcept
     this->unitCodeForm->setPlaceholderText("Jednostka");
 
     this->enterButton->setText("&Dodaj wprowadzony towar");
-    this->convertButton->setText("&Konwertuj w plik excel");
-    this->deleteButton->setText("Usuń &jeden towar z bazy");
-    this->clearButton->setText("Usuń &wszystkie towary z bazy");
+    this->convertButton->setText("K&onwertuj w plik excel");
+    this->clearButton->setText("&Usuń wszystkie towary z bazy");
     this->barcodeGenerationButton->setText("&Generuj kod kreskowy");
 }
 
@@ -117,6 +127,8 @@ void MainWindow::updateView()
     auto* databaseModel = qobject_cast<QSqlTableModel*>(view->model());
     if (databaseModel)
         databaseModel->select();
+
+    this->view->resizeColumnsToContents();
 }
 
 Product MainWindow::getProductFromForms() const
@@ -234,75 +246,6 @@ void MainWindow::handleConvertButton() const noexcept
     }
 }
 
-void MainWindow::handleDeleteButton() noexcept
-{
-    bool ok = false; 
-    auto codeEanText = QInputDialog::getText(this, "Wprowadź kod kreskowy", "Kod:", QLineEdit::Normal, "", &ok);
-    bool isNullCodeEan = codeEanText == "-" || codeEanText.isEmpty();
-
-    if (ok) try
-    {
-        if (isNullCodeEan)
-        {
-            ok = false;
-            auto nameText = QInputDialog::getText(this, "Wprowadź nazwę", "Nazwa:", QLineEdit::Normal, "", &ok);
-            if (ok)
-            {
-                auto products = this->db.fetchByName(this->normalize(nameText)); 
-
-                if (products.empty())
-                {
-                    QMessageBox::information(this, "Nie ma towaru", "Nie ma towaru - nic do usunięcia");
-                    
-                    return;
-                }
-
-                if (products.size() > 1)
-                {
-                    QMessageBox::information(this, "Za dużo towarów", "Towarów więcej niż jeden, proszę sprecyzować nazwę");
-                    
-                    return;
-                }
-
-                this->db.moveToTrash(products[0]);
-                this->updateView();
-
-                QMessageBox::information(this, "Usunięto towar", "Towar został pomyślnie usunięty");
-            }
-
-            return;
-        }
-
-        CodeEan codeEan(codeEanText);
-        auto product = this->db.fetchByCodeEan(codeEan);    
-        if (!product)
-        {
-            QMessageBox::information(this, "Nie ma towaru", "Nie ma towaru - nic do usunięcia");
-
-            return;
-        }
-
-        this->db.moveToTrash(*product);
-        this->updateView(); 
-
-        QMessageBox::information(this, "Usunięto towar", "Towar został pomyślnie usunięty");
-
-        return;
-    }
-    catch (const SqlError& ex)
-    {
-        QMessageBox::information(this, "Błąd w bazie towarów", ex.what());
-    }
-    catch (const std::exception& ex)
-    {
-        QMessageBox::information(this, "Błąd", ex.what());
-    }
-    catch (...)
-    {
-        QMessageBox::information(this, "Niewiadomy błąd", "Niewiadomy błąd");
-    }
-}
-
 void MainWindow::handleClearButton() noexcept
 {
     auto reply = QMessageBox::question(this, "Potwierdzenie", "Czy na pewno usunąć bazę?", QMessageBox::Yes | QMessageBox::No); 
@@ -392,3 +335,45 @@ void MainWindow::handleBarcodeGenerationButton() noexcept
     }
 }
 
+void MainWindow::handleDeleteItem() noexcept
+{
+    auto answer = QMessageBox::question(this, "Potwierdzenie", "Czy na pewno chcesz usunąć ten towar?");
+    if (answer == QMessageBox::No)
+        return;
+
+    auto cur = this->view->currentIndex();
+    if (!cur.isValid())
+        return;
+
+    const int idColumn = 0;
+    int row = cur.row();
+
+    auto idIdx = this->view->model()->index(row, idColumn);
+    bool ok = false;
+    int id = this->view->model()->data(idIdx, Qt::EditRole).toInt(&ok);
+    if (!ok)
+        return;
+
+    try
+    {
+        this->db.moveToTrash(id);
+    }
+    catch(const std::exception& ex)
+    {
+        QMessageBox::warning(this, "Błąd przy usuwaniu elementu", QString("Błąd: ") + ex.what());
+
+        return;
+    }
+
+    this->updateView();
+}
+
+void MainWindow::createDeleteAction() noexcept
+{
+    auto deleteAction = new QAction(this);
+    deleteAction->setShortcut(QKeySequence::Delete);
+    deleteAction->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+    this->view->addAction(deleteAction);
+
+    this->connect(deleteAction, &QAction::triggered, this, &MainWindow::handleDeleteItem);
+}
