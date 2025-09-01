@@ -207,7 +207,7 @@ void MainWindow::handleConvertButton() const noexcept
 {
     QProcess convertion;
     const QString program = QCoreApplication::applicationDirPath() + "/toOds";
-    const QString dbPath = QCoreApplication::applicationDirPath() + "/zamówienie.db";
+    const QString dbPath = QCoreApplication::applicationDirPath() + "/order.db";
 
     convertion.setProgram(program);
     convertion.setArguments({ dbPath });

@@ -18,11 +18,6 @@ public:
     DatabaseProductsModel(QObject* parent = nullptr, const QSqlDatabase& db = QSqlDatabase()) :
         QSqlTableModel(parent, db)
     {
-        this->setHeaderData(0, Qt::Horizontal, "Id");
-        this->setHeaderData(1, Qt::Horizontal, "Nazwa");
-        this->setHeaderData(2, Qt::Horizontal, "Kod Kreskowy");
-        this->setHeaderData(3, Qt::Horizontal, "Ilość");
-        this->setHeaderData(4, Qt::Horizontal, "Jednostka");
     }
 
     class EanDelegate : public QStyledItemDelegate
