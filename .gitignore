@@ -1,5 +1,5 @@
 build/
 .cache/
 compile.sh
-compile.sh
+compile.bat
 compile_commands.json
