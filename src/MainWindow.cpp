@@ -1,5 +1,7 @@
 #include "MainWindow.hpp"
 #include <QPushButton>
+#include <QIcon>
+#include <QSize>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QMessageBox>
@@ -188,6 +190,9 @@ void MainWindow::buildUi()
     mainLayout->addLayout(row1);
 
     auto* row2 = new QHBoxLayout;
+    this->convertButton->setText("");
+    this->convertButton->setIcon(QIcon(":/icons/database.svg"));
+    this->convertButton->setIconSize(QSize(24, 24));
     row2->addWidget(this->convertButton);
     row2->addWidget(this->barcodeButton);
     mainLayout->addLayout(row2);
