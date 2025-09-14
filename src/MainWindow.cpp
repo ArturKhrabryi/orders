@@ -33,7 +33,7 @@ MainWindow::MainWindow(QWidget* parent) :
     this->refreshModel();
     this->forms->focusNameForm();
 
-	this->setWindowTitle("Zamówienia");
+	this->setWindowTitle(tr("Orders"));
 	this->resize(300, 400);
 }
 

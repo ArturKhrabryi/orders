@@ -1,11 +1,20 @@
+#include <QTranslator>
 #include <QApplication>
 #include <QMessageBox>
+#include <iostream>
 #include "MainWindow.hpp"
 
 
 int main(int argc, char* argv[])
 {
-	QApplication app(argc, argv);
+    QTranslator tr;
+    auto res = tr.load(":/i18n/orders_pl");
+    if (!res)
+        std::cout << "Cannot load translations" << std::endl;
+
+    QApplication app(argc, argv);
+    if (res)
+        app.installTranslator(&tr);
 
 	try
 	{

@@ -70,8 +70,11 @@ if (BUILD_BARCODE_GENERATOR)
     list(APPEND ENABLED_COMPONENTS barcodeGenerator)
 endif()
 
-find_package(Qt6 6 REQUIRED COMPONENTS Widgets Sql Svg)
-qt_standard_project_setup()
+find_package(Qt6 6 REQUIRED COMPONENTS Widgets Sql Svg LinguistTools)
+qt_standard_project_setup(
+    I18N_SOURCE_LANGUAGE en
+    I18N_TRANSLATED_LANGUAGES pl ru
+)
 
 file (GLOB SOURCES CONFIGURE_DEPENDS src/*.cpp)
 set(QT_OBJECT_INCLUDES
@@ -93,6 +96,28 @@ qt_add_resources(${PROJECT_NAME} app_icons
     PREFIX "/"
     BASE "res"
     FILES res/icons/database.svg
+)
+
+set(TS_FILES
+    "${CMAKE_SOURCE_DIR}/translations/${PROJECT_NAME}_pl.ts"
+    "${CMAKE_SOURCE_DIR}/translations/${PROJECT_NAME}_ru.ts"
+)
+
+qt_add_lupdate(${PROJECT_NAME}
+    TS_FILES ${TS_FILES}
+    SOURCES ${SOURCES} ${QT_OBJECT_INCLUDES}
+    OPTIONS -no-obsolete
+)
+
+qt_add_lrelease(${PROJECT_NAME}
+    TS_FILES ${TS_FILES}
+    QM_FILES_OUTPUT_VARIABLE QM_FILES 
+)
+
+qt_add_resources(${PROJECT_NAME} i18n
+    PREFIX "/i18n"
+    BASE "${CMAKE_CURRENT_BINARY_DIR}"
+    FILES ${QM_FILES}
 )
 
 target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_20)
