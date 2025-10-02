@@ -55,6 +55,8 @@ void MainWindow::onAddProduct() noexcept
         this->refreshModel();
         this->forms->clear();
         this->forms->focusNameForm();
+
+		this->view->scrollToBottom();
     }
     catch (const std::exception& ex)
     {
@@ -212,3 +214,4 @@ void MainWindow::createActions()
 
     this->connect(deleteAction, &QAction::triggered, this, &MainWindow::onDeleteSelected);
 }
+
