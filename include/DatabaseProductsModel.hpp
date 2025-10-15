@@ -38,7 +38,7 @@ public:
             }
             catch (const std::exception& ex)
             {
-                QMessageBox::warning(editor, "Błąd kodu EAN", ex.what());
+                QMessageBox::warning(editor, tr("Code EAN error"), ex.what());
                 const_cast<QLineEdit*>(ed)->setFocus();
             }
         }

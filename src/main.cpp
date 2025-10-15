@@ -1,20 +1,24 @@
-#include <QTranslator>
 #include <QApplication>
+#include <QTranslator>
+#include <QLibraryInfo>
 #include <QMessageBox>
-#include <iostream>
+#include <QCoreApplication>
 #include "MainWindow.hpp"
 
 
 int main(int argc, char* argv[])
 {
-    QTranslator tr;
-    auto res = tr.load(":/i18n/orders_pl");
-    if (!res)
-        std::cout << "Cannot load translations" << std::endl;
-
     QApplication app(argc, argv);
-    if (res)
-        app.installTranslator(&tr);
+    QLocale plLocale(QLocale::Polish, QLocale::Poland);
+    QLocale::setDefault(plLocale);
+
+    QTranslator qtTr;
+    if (qtTr.load(plLocale, "qtbase", "_", QLibraryInfo::path(QLibraryInfo::TranslationsPath)))
+        app.installTranslator(&qtTr);
+
+    QTranslator appTr;
+    if (appTr.load(plLocale, "orders", "_", ":/i18n"))
+        app.installTranslator(&appTr);
 
 	try
 	{
@@ -25,13 +29,9 @@ int main(int argc, char* argv[])
     }
     catch (const std::exception& ex)
     {
-        QMessageBox::critical(nullptr, "Fatal", ex.what());
-
-        return 1;
-    }
-    catch (...)
-    {
-        QMessageBox::critical(nullptr, "Fatal", "Unknown fatal error");
+        QString title = QCoreApplication::translate("ErrorDialog", "Critical Error");
+        QString message = QCoreApplication::translate("ErrorDialog", "A critical error occured: ");
+        QMessageBox::critical(nullptr, title, message + ex.what());
 
         return 1;
     }

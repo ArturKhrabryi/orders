@@ -3,7 +3,6 @@
 #include <QLabel>
 #include <QLineEdit>
 #include <QVBoxLayout>
-#include <qboxlayout.h>
 
 
 ProductFormWidget::ProductFormWidget(QWidget* parent) :
@@ -15,7 +14,7 @@ ProductFormWidget::ProductFormWidget(QWidget* parent) :
 {
     auto* layout = new QVBoxLayout(this);
 
-    auto makeForm = [&](const char* labelText, const char* placeholder, QLineEdit* form) -> void
+    auto makeForm = [&](const QString& labelText, const QString& placeholder, QLineEdit* form) -> void
     {
         auto label = new QLabel(labelText, this);
         label->setBuddy(form);
@@ -24,10 +23,10 @@ ProductFormWidget::ProductFormWidget(QWidget* parent) :
         form->setPlaceholderText(placeholder);
     };
 
-    makeForm("&Nazwa", "Nazwa", this->nameForm);
-    makeForm("&Kod kreskowy", "Kod kreskowy", this->codeEanForm);
-    makeForm("&Ilość", "Ilość", this->quantityForm);
-    makeForm("&Jednostka", "Jednostka", this->unitCodeForm);
+    makeForm(tr("&Name"), tr("Name"), this->nameForm);
+    makeForm(tr("&Code ean"), tr("Code ean"), this->codeEanForm);
+    makeForm(tr("&Quantity"), tr("Quantity"), this->quantityForm);
+    makeForm(tr("&Unit"), tr("Unit"), this->unitCodeForm);
 }
 
 QString ProductFormWidget::normalizeWords(const QString& input) noexcept
@@ -43,7 +42,7 @@ Product ProductFormWidget::getProduct() const
     Product product;
     auto name = normalizeWords(this->nameForm->text());
     if (name.isEmpty())
-        throw std::runtime_error("Name cannot be empty");
+        throw std::runtime_error(tr("Name cannot be empty").toStdString());
 
     product.name = std::move(name);
 
@@ -54,7 +53,7 @@ Product ProductFormWidget::getProduct() const
     bool ok = false;
     auto quantity = this->quantityForm->text().toFloat(&ok);
     if (!ok)
-        throw std::runtime_error("Invalid quantity value.");
+        throw std::runtime_error(tr("Invalid quantity value").toStdString());
 
     product.quantity = quantity;
 

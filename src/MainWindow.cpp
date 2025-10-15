@@ -7,7 +7,6 @@
 #include <QMessageBox>
 #include <QCoreApplication>
 #include <QInputDialog>
-#include <qnamespace.h>
 #include "Database.hpp"
 #include "ProductFormWidget.hpp"
 #include "ProductsTableView.hpp"
@@ -19,10 +18,10 @@ MainWindow::MainWindow(QWidget* parent) :
     central(new QWidget(this)),
     view(new ProductsTableView(central)),
     forms(new ProductFormWidget(central)),
-    addButton(new QPushButton("&Dodaj wprowadzony towar", central)),
-    convertButton(new QPushButton("K&onwertuj w plik excel", central)),
-    clearButton(new QPushButton("&Usuń wszystkie towary z bazy", central)),
-    barcodeButton(new QPushButton("&Generuj kod kreskowy", central))
+    addButton(new QPushButton(tr("&Add the entered product"), central)),
+    convertButton(new QPushButton("", central)),
+    clearButton(new QPushButton(tr("&Clear the database"), central)),
+    barcodeButton(new QPushButton("", central))
 {
 	this->setCentralWidget(this->central);
 
@@ -60,11 +59,11 @@ void MainWindow::onAddProduct() noexcept
     }
     catch (const std::exception& ex)
     {
-        QString message = "Błąd: ";
+        QString message = tr("Error: ");
         message.append(ex.what());
-        message.append("\nSpróbuj ponownie");
+        message.append(tr("\nTry again"));
 
-        QMessageBox::warning(this, "Nie udało się dodać towar", message);
+        QMessageBox::warning(this, tr("Failed to add product"), message);
     }
 }
 
@@ -80,42 +79,38 @@ void MainWindow::onConvert() noexcept
     appDir
     );
 
-    const auto title = QStringLiteral("Wynik konwersji");
+    const auto title = tr("Conversion result");
     if (res.ok)
-        QMessageBox::information(this, title, "Zakończono pomyślnie: " + res.output);
+        QMessageBox::information(this, title, tr("Completed successfully: ") + res.output);
     else
-        QMessageBox::warning(this, title, "Błąd uruchomienia: " + (res.error.isEmpty() ? res.output : res.error));
+        QMessageBox::warning(this, title, tr("Startup error: ") + (res.error.isEmpty() ? res.output : res.error));
 }
 
 void MainWindow::onClearAll() noexcept
 {
-    auto reply = QMessageBox::question(this, "Potwierdzenie", "Czy na pewno usunąć bazę?", QMessageBox::Yes | QMessageBox::No); 
+    auto reply = QMessageBox::question(this, tr("Confirmation"), tr("Are you sure you want to clear the database?"), QMessageBox::Yes | QMessageBox::No); 
     if (reply == QMessageBox::Yes)
     {
         try
         {
             this->db.moveAllToTrash();
             this->refreshModel();
-            QMessageBox::information(this, "Usunięto bazę", "Towary zostały pomyślnie usunięte");
+            QMessageBox::information(this, tr("Database cleared"), tr("The database was successfully cleared"));
         }
         catch (const SqlError& ex)
         {
-            QMessageBox::warning(this, "Błąd w bazie towarów", ex.what());
+            QMessageBox::warning(this, tr("Database error"), ex.what());
         }
         catch (const std::exception& ex)
         {
-            QMessageBox::warning(this, "Błąd", ex.what());
-        }
-        catch (...)
-        {
-            QMessageBox::critical(this, "Niewiadomy błąd", "Niewiadomy błąd");
+            QMessageBox::warning(this, tr("Error"), ex.what());
         }
     }
 }
 
 void MainWindow::onGenerateBarcode() noexcept
 {
-    const auto codeEanText = QInputDialog::getText(this, "Wprowadź kod kreskowy", "Kod kreskowy:");
+    const auto codeEanText = QInputDialog::getText(this, tr("Enter barcode"), tr("Barcode:"));
     if (codeEanText.simplified().isEmpty())
         return;
 
@@ -123,7 +118,7 @@ void MainWindow::onGenerateBarcode() noexcept
     {
         CodeEan codeEan(codeEanText);
 
-        QString filename = QInputDialog::getText(const_cast<MainWindow*>(this), "Wprowadź nazwę pliku", "Nazwa pliku:").simplified();
+        QString filename = QInputDialog::getText(const_cast<MainWindow*>(this), tr("Enter file name"), tr("File name:")).simplified();
         if (filename.isEmpty())
             return;
 
@@ -136,15 +131,15 @@ void MainWindow::onGenerateBarcode() noexcept
             appDir 
         );
 
-        const auto title = QStringLiteral("Wynik generacji");
+        const auto title = tr("Generation result");
         if (res.ok)
-            QMessageBox::information(this, title, "Zakończono pomyślnie: " + res.output);
+            QMessageBox::information(this, title, tr("Completed successfully: ") + res.output);
         else
-            QMessageBox::warning(this, title, "Błąd uruchomienia: " + (res.error.isEmpty() ? res.output : res.error));
+            QMessageBox::warning(this, title, tr("Startup error: ") + (res.error.isEmpty() ? res.output : res.error));
     }
     catch (const std::exception& ex)
     {
-        QMessageBox::warning(this, "Coś poszło nie tak", QStringLiteral("Błąd") + ex.what());
+        QMessageBox::warning(this, tr("Something went wrong"), tr("Error: ") + ex.what());
     }
 }
 
@@ -154,7 +149,7 @@ void MainWindow::onDeleteSelected() noexcept
     if (!cur.isValid())
         return;
 
-    auto answer = QMessageBox::question(this, "Potwierdzenie", "Czy na pewno chcesz usunąć ten towar?");
+    auto answer = QMessageBox::question(this, tr("Confirmation"), tr("Are you sure you want to delete this product?"));
     if (answer == QMessageBox::No)
         return;
 
@@ -171,7 +166,7 @@ void MainWindow::onDeleteSelected() noexcept
     }
     catch(const std::exception& ex)
     {
-        QMessageBox::warning(this, "Błąd przy usuwaniu elementu", QStringLiteral("Błąd: ") + ex.what());
+        QMessageBox::warning(this, tr("Error while deleting product"), tr("Error: ") + ex.what());
 
         return;
     }
@@ -186,18 +181,24 @@ void MainWindow::buildUi()
 	mainLayout->addWidget(this->view);
     mainLayout->addWidget(this->forms);
 
-    auto* row1 = new QHBoxLayout;
-    row1->addWidget(this->addButton);
-    row1->addWidget(this->clearButton);
-    mainLayout->addLayout(row1);
+    auto* cols = new QHBoxLayout;
+    mainLayout->addLayout(cols);
 
-    auto* row2 = new QHBoxLayout;
-    this->convertButton->setText("");
-    this->convertButton->setIcon(QIcon(":/icons/database.svg"));
-    this->convertButton->setIconSize(QSize(24, 24));
-    row2->addWidget(this->convertButton);
-    row2->addWidget(this->barcodeButton);
-    mainLayout->addLayout(row2);
+    this->convertButton->setIcon(QIcon(":/icons/db_to_sql.svg"));
+    this->convertButton->setIconSize(QSize(48, 48));
+    this->convertButton->setFixedSize(64, 64);
+    cols->addWidget(this->convertButton);
+
+    this->barcodeButton->setIcon(QIcon(":/icons/ean13.svg"));
+    this->barcodeButton->setIconSize(QSize(48, 48));
+    this->barcodeButton->setFixedSize(64, 64);
+    cols->addWidget(this->barcodeButton);
+
+    auto* row = new QVBoxLayout;
+    row->addWidget(this->addButton);
+    row->addWidget(this->clearButton);
+    cols->addLayout(row);
+
 }
 
 void MainWindow::createActions()

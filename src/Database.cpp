@@ -38,10 +38,10 @@ Database::Database() :
         throw std::runtime_error(model.lastError().text().toStdString());
 
     this->model.setHeaderData(0, Qt::Horizontal, "Id");
-    this->model.setHeaderData(1, Qt::Horizontal, "Nazwa");
-    this->model.setHeaderData(2, Qt::Horizontal, "Kod Kreskowy");
-    this->model.setHeaderData(3, Qt::Horizontal, "Ilość");
-    this->model.setHeaderData(4, Qt::Horizontal, "Jednostka");
+    this->model.setHeaderData(1, Qt::Horizontal, DatabaseProductsModel::tr("Name"));
+    this->model.setHeaderData(2, Qt::Horizontal, DatabaseProductsModel::tr("Code ean"));
+    this->model.setHeaderData(3, Qt::Horizontal, DatabaseProductsModel::tr("Quantity"));
+    this->model.setHeaderData(4, Qt::Horizontal, DatabaseProductsModel::tr("Unit"));
 }
 
 Database::~Database()

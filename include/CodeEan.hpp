@@ -1,27 +1,36 @@
 #pragma once
 
 #include <QString>
+#include <QCoreApplication>
 #include <stdexcept>
 
 
 struct InvalidEan13LengthError : public std::runtime_error
 {
-    InvalidEan13LengthError() : std::runtime_error("EAN13 must have exactly 13 digits.") {}
+    InvalidEan13LengthError() :
+        std::runtime_error(QCoreApplication::translate("InvalidEan13LengthError",
+                    "EAN13 must have exactly 13 digits.").toStdString()) {}
 };
 
 struct InvalidFirst12LengthError : public std::runtime_error
 {
-    InvalidFirst12LengthError() : std::runtime_error("First 12 digits must have exactly 12 digits.") {}
+    InvalidFirst12LengthError() :
+        std::runtime_error(QCoreApplication::translate("InvalidFirst12LengthError",
+                    "First 12 digits must have exactly 12 digits.").toStdString()) {}
 };
 
 struct InvalidEan13CharacterError : public std::runtime_error
 {
-    InvalidEan13CharacterError() : std::runtime_error("EAN13 must contain only digits.") {}
+    InvalidEan13CharacterError() :
+        std::runtime_error(QCoreApplication::translate("InvalidEan13CharacterError",
+                    "EAN13 must contain only digits.").toStdString()) {}
 };
 
 struct InvalidEan13ChecksumError : public std::runtime_error
 {
-    InvalidEan13ChecksumError() : std::runtime_error("EAN13 checksum is invalid") {}
+    InvalidEan13ChecksumError() :
+        std::runtime_error(QCoreApplication::translate("InvalidEan13ChecksumError",
+                    "EAN13 checksum is invalid").toStdString()) {}
 };
 
 

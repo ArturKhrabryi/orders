@@ -1,4 +1,5 @@
 #include "ProcessRunner.hpp"
+#include <QCoreApplication>
 #include <QProcess>
 
 
@@ -16,7 +17,7 @@ ProcessResult ProcessRunner::run(const QString& program, const QStringList& args
         return { false, -1, "", process.errorString() };
 
     if (!process.waitForFinished(finishTimeoutMs))
-        return { false, -1, "", "Execution timeout" };
+        return { false, -1, "", QCoreApplication::translate("ProcessRunner", "Execution timeout") };
 
     const auto out = QString::fromLocal8Bit(process.readAllStandardOutput());
     const bool ok = (process.exitStatus() == QProcess::NormalExit && process.exitCode() == 0);

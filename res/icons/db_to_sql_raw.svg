@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="105.99973mm"
+   height="133.88649mm"
+   viewBox="0 0 105.99974 133.88649"
+   version="1.1"
+   id="svg5"
+   inkscape:version="1.2.2 (b0a8486541, 2022-12-01)"
+   sodipodi:docname="db_to_sql.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview7"
+     pagecolor="#505050"
+     bordercolor="#ffffff"
+     borderopacity="1"
+     inkscape:showpageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="1"
+     inkscape:deskcolor="#505050"
+     inkscape:document-units="mm"
+     showgrid="false"
+     inkscape:zoom="2"
+     inkscape:cx="191.75"
+     inkscape:cy="185"
+     inkscape:window-width="1920"
+     inkscape:window-height="1008"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs2">
+    <rect
+       x="252.92096"
+       y="141.81732"
+       width="81.010376"
+       height="76.759857"
+       id="rect3943" />
+  </defs>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-52.000165,-83.215617)">
+    <path
+       id="rect341"
+       style="fill:#ffffff;stroke:none;stroke-width:1.7589;stroke-linejoin:round;paint-order:stroke fill markers"
+       d="m 83.565732,90.657462 a 25,7 0 0 0 -25.000027,7.00009 25,7 0 0 0 25.000027,7.000088 25,7 0 0 0 24.999498,-7.000088 25,7 0 0 0 -24.999498,-7.00009 z m -25.000027,9.734288 v 13.76557 a 25,7 0 0 0 12.500012,6.06216 25,7 0 0 0 24.999505,0 25,7 0 0 0 12.500008,-6.06216 v -13.76453 c -0.36962,0.37595 -0.80219,0.71976 -1.27382,1.03197 -1.43985,0.95317 -3.36922,1.73131 -5.71076,2.38694 -4.683068,1.31126 -11.017358,2.09548 -18.015438,2.09548 -6.998097,0 -13.330831,-0.78422 -18.013887,-2.09548 -2.341523,-0.65563 -4.270925,-1.43377 -5.710762,-2.38694 -0.472039,-0.31248 -0.904745,-0.65667 -1.274858,-1.03301 z m 0,16.49409 v 13.77177 a 25,7 0 0 0 12.500012,6.06216 25,7 0 0 0 24.999505,0 25,7 0 0 0 12.500008,-6.06216 v -13.77074 c -0.7136,0.72783 -1.65421,1.33839 -2.80293,1.89549 -2.33394,1.13192 -5.55082,2.03355 -9.498118,2.67167 -7.8947,1.27624 -17.50379,1.27624 -25.398453,0 -3.947331,-0.63812 -7.16209,-1.53975 -9.496061,-2.67167 -1.149262,-0.55736 -2.09024,-1.16824 -2.803963,-1.89652 z m 0,16.49976 v 13.77177 a 25,7 0 0 0 12.500012,6.06217 25,7 0 0 0 24.999505,0 25,7 0 0 0 12.500008,-6.06217 v -13.77073 c -0.71361,0.72784 -1.65419,1.3389 -2.80293,1.89601 -2.33395,1.13192 -5.55081,2.03355 -9.498118,2.67167 -7.8947,1.27624 -17.50378,1.27624 -25.398453,0 -3.947335,-0.63812 -7.162088,-1.53975 -9.496061,-2.67167 -1.149279,-0.55738 -2.090235,-1.16875 -2.803963,-1.89705 z" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:22.5778px;line-height:0;font-family:'Trebuchet MS';-inkscape-font-specification:'Trebuchet MS';text-align:center;text-anchor:middle;fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:2.5;stroke-linejoin:round;stroke-opacity:1;paint-order:stroke fill markers"
+       x="135.94766"
+       y="111.04343"
+       id="text4101"><tspan
+         sodipodi:role="line"
+         id="tspan4099"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:22.5778px;font-family:'Trebuchet MS';-inkscape-font-specification:'Trebuchet MS';text-align:center;text-anchor:middle;stroke:#000000;stroke-width:2.5;stroke-opacity:1"
+         x="135.94766"
+         y="111.04343">XLS</tspan></text>
+    <path
+       id="rect4103"
+       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:2.5;stroke-linejoin:round;stroke-opacity:1;paint-order:stroke markers fill;stroke-linecap:round"
+       d="M 130.33905 130.16159 L 130.33905 155.47012 L 127.77849 155.47012 L 131.63148 162.14362 L 135.48396 155.47012 L 132.92339 155.47012 L 132.92339 130.16159 L 130.33905 130.16159 z " />
+  </g>
+</svg>

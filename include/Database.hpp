@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QCoreApplication>
 #include <QSqlDatabase>
 #include <QSqlQuery>
 #include <QSqlError>
@@ -38,63 +39,63 @@ public:
 struct SqlOpenDatabaseError : SqlError
 {
     SqlOpenDatabaseError(const QSqlError& sqlError) :
-        SqlError("Cannot open database", sqlError)
+        SqlError(QCoreApplication::translate("SqlOpenDatabaseError", "Cannot open database"), sqlError)
     {}
 };
 
 struct SqlEnableForeignKeysError : SqlError
 {
     SqlEnableForeignKeysError(const QSqlError& sqlError) : 
-        SqlError("Cannot enable foreign keys", sqlError)
+        SqlError(QCoreApplication::translate("SqlEnableForeignKeysError", "Cannot enable foreign keys"), sqlError)
     {}
 };
 
 struct SqlBeginTransactionError : SqlError
 {
     SqlBeginTransactionError(const QSqlError& sqlError) :
-        SqlError("Cannot start sql transaction", sqlError)
+        SqlError(QCoreApplication::translate("SqlBeginTransactionError", "Cannot start sql transaction"), sqlError)
     {}
 };
 
 struct SqlCommitTransactionError : SqlError
 {
     SqlCommitTransactionError(const QSqlError& sqlError) :
-        SqlError("Cannot commit sql transaction", sqlError)
+        SqlError(QCoreApplication::translate("SqlBeginTransactionError", "Cannot commit sql transaction"), sqlError)
     {}
 };
 
 struct SqlCreationTableError : SqlError
 {
     SqlCreationTableError(const QSqlError& sqlError) :
-        SqlError("Cannot create table", sqlError)
+        SqlError(QCoreApplication::translate("SqlCreationTableError", "Cannot create table"), sqlError)
     {}
 };
 
 struct SqlInsertionIntoTableError : SqlError
 {
     SqlInsertionIntoTableError(const QSqlError& sqlError) :
-        SqlError("Cannot insert into table", sqlError)
+        SqlError(QCoreApplication::translate("SqlInsertionIntoTableError", "Cannot insert into table"), sqlError)
     {}
 };
 
 struct SqlFetchProductError: SqlError
 {
     SqlFetchProductError (const QSqlError& sqlError) :
-        SqlError("Cannot fetch products", sqlError)
+        SqlError(QCoreApplication::translate("SqlFetchProductError", "Cannot fetch products"), sqlError)
     {}
 };
 
 struct SqlAddProductError : SqlError
 {
     SqlAddProductError(const QSqlError& sqlError) :
-        SqlError("Cannot add product", sqlError)
+        SqlError(QCoreApplication::translate("SqlAddProductError", "Cannot add product"), sqlError)
     {}
 };
 
 struct SqlMoveToTrashError : SqlError
 {
     SqlMoveToTrashError(const QSqlError& sqlError) :
-        SqlError("Cannot move products to trash", sqlError)
+        SqlError(QCoreApplication::translate("SqlMoveToTrashError", "Cannot move products to trash"), sqlError)
     {}
 };
 

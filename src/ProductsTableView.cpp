@@ -8,7 +8,7 @@ ProductsTableView::ProductsTableView(QWidget* parent) noexcept : QTableView(pare
     this->setSelectionBehavior(QAbstractItemView::SelectItems);
     this->setSelectionMode(QAbstractItemView::SingleSelection);
     this->setEditTriggers(QAbstractItemView::DoubleClicked | QAbstractItemView::EditKeyPressed);
-    this->verticalHeader()->setVisible(false);
+    //this->verticalHeader()->setVisible(false);
     this->setAlternatingRowColors(true);
 }
 

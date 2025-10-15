@@ -92,10 +92,11 @@ endif()
 
 qt_add_executable(${PROJECT_NAME} ${WIN32_FLAG} ${SOURCES})
 
+file (GLOB ICONS CONFIGURE_DEPENDS res/icons/*.svg)
 qt_add_resources(${PROJECT_NAME} app_icons
     PREFIX "/"
     BASE "res"
-    FILES res/icons/database.svg
+    FILES ${ICONS}
 )
 
 set(TS_FILES
@@ -103,9 +104,10 @@ set(TS_FILES
     "${CMAKE_SOURCE_DIR}/translations/${PROJECT_NAME}_ru.ts"
 )
 
+file(GLOB HEADERS CONFIGURE_DEPENDS include/*.hpp)
 qt_add_lupdate(${PROJECT_NAME}
     TS_FILES ${TS_FILES}
-    SOURCES ${SOURCES} ${QT_OBJECT_INCLUDES}
+    SOURCES ${SOURCES} ${QT_OBJECT_INCLUDES} ${HEADERS}
     OPTIONS -no-obsolete
 )
 
