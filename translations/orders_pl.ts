@@ -84,7 +84,7 @@
     <message>
         <location filename="../src/MainWindow.cpp" line="23"/>
         <source>&amp;Clear the database</source>
-        <translation>&amp;Wyczyszcz bazę</translation>
+        <translation>&amp;Wyczyść bazę</translation>
     </message>
     <message>
         <location filename="../src/MainWindow.cpp" line="35"/>
