@@ -7,6 +7,8 @@
 #include <QMessageBox>
 #include <QCoreApplication>
 #include <QInputDialog>
+#include <QFileDialog>
+#include <QStringLiteral>
 #include "Database.hpp"
 #include "ProductFormWidget.hpp"
 #include "ProductsTableView.hpp"
@@ -118,22 +120,28 @@ void MainWindow::onGenerateBarcode() noexcept
     {
         CodeEan codeEan(codeEanText);
 
-        QString filename = QInputDialog::getText(const_cast<MainWindow*>(this), tr("Enter file name"), tr("File name:")).simplified();
+        QString filename = QFileDialog::getSaveFileName(
+                this,
+                tr("Choose where to save the barcode"),
+                QCoreApplication::applicationDirPath(),
+                tr("PNG Images (*.png)")
+        );
+
         if (filename.isEmpty())
             return;
 
-        const QString generatorName = "barcodeGenerator";
+        const QString generatorName = QStringLiteral("barcodeGenerator");
         const auto appDir = QCoreApplication::applicationDirPath();
 
         const auto res = ProcessRunner::run(
             appDir + "/" + generatorName,
-            { "-f", appDir + "/" + filename, "-e", codeEan.getValue() },
+            { "-f", filename, "-e", codeEan.getValue() },
             appDir 
         );
 
         const auto title = tr("Generation result");
         if (res.ok)
-            QMessageBox::information(this, title, tr("Completed successfully: ") + res.output);
+            QMessageBox::information(this, title, tr("Barcode generated successfully"));
         else
             QMessageBox::warning(this, title, tr("Startup error: ") + (res.error.isEmpty() ? res.output : res.error));
     }
