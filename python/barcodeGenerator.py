@@ -2,6 +2,7 @@ import argparse
 import barcode
 import sys
 from barcode.writer import ImageWriter
+from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont
 
 def main() -> int:
@@ -17,7 +18,8 @@ def main() -> int:
         "quiet_zone": 0,
     }
 
-    res = ean.save(args.filename, options)
+    filename = Path(args.filename)
+    res = ean.save(filename.with_suffix(''), options)
 
     if args.label is not None:
         img = Image.open(res)
