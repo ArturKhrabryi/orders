@@ -192,6 +192,9 @@ void MainWindow::buildUi()
     auto* cols = new QHBoxLayout;
     mainLayout->addLayout(cols);
 
+    this->addButton->setStyleSheet("background-color: rgb(0, 100, 0);");
+    this->clearButton->setStyleSheet("background-color: rgb(120, 0, 0);");
+
     this->convertButton->setIcon(QIcon(":/icons/db_to_sql.svg"));
     this->convertButton->setIconSize(QSize(48, 48));
     this->convertButton->setFixedSize(64, 64);
