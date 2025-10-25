@@ -1,13 +1,15 @@
-Project "orders"
-Copyright (c) 2025 Arturchik
+Project "orders"  
+Copyright (c) 2025 Arturchik  
 
-This project is published for educational purposes.
+This project is published for educational and demonstration purposes only.
 
-The source code of "orders" is provided as-is, without warranty.
-You may read and use this code for learning and demonstration.
+The source code of "orders" is provided "as is", without any warranty of any kind,
+express or implied. You may read and use this code for learning and experimentation.
 
+This project uses the Qt framework under the terms of the GNU Lesser General Public License (LGPL) v3.  
+Qt binaries are **not** included in this package.  
+Qt source code is available at: https://download.qt.io  
 
-This project uses the Qt framework under the terms of the GNU LGPL v3.
-Qt binaries are not included in this package.
-Qt source code is available at: https://download.qt.io
-A copy of the LGPL v3 license can be found in LICENSE.LGPL3.
+A copy of the LGPL v3 license is included in the file LICENSE.LGPL3.  
+If you distribute binaries linked with Qt, you must comply with the LGPL v3 terms,
+including allowing users to relink with a modified version of Qt.
