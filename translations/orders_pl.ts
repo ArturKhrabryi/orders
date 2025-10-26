@@ -30,6 +30,79 @@
     </message>
 </context>
 <context>
+    <name>DatabaseUnits</name>
+    <message>
+        <location filename="../src/Database.cpp" line="224"/>
+        <source>st</source>
+        <translation>kpl</translation>
+    </message>
+    <message>
+        <location filename="../src/Database.cpp" line="224"/>
+        <source>set</source>
+        <translation>komplet</translation>
+    </message>
+    <message>
+        <location filename="../src/Database.cpp" line="225"/>
+        <source>pkg</source>
+        <translation>op</translation>
+    </message>
+    <message>
+        <location filename="../src/Database.cpp" line="225"/>
+        <source>packaging</source>
+        <translation>opakowanie</translation>
+    </message>
+    <message>
+        <location filename="../src/Database.cpp" line="226"/>
+        <source>pal</source>
+        <translation>pal</translation>
+    </message>
+    <message>
+        <location filename="../src/Database.cpp" line="226"/>
+        <source>palette</source>
+        <translation>paleta</translation>
+    </message>
+    <message>
+        <location filename="../src/Database.cpp" line="227"/>
+        <source>pc</source>
+        <translation>szt</translation>
+    </message>
+    <message>
+        <location filename="../src/Database.cpp" line="227"/>
+        <source>piece</source>
+        <translation>sztuka</translation>
+    </message>
+    <message>
+        <location filename="../src/Database.cpp" line="228"/>
+        <source>t</source>
+        <translation>t</translation>
+    </message>
+    <message>
+        <location filename="../src/Database.cpp" line="228"/>
+        <source>ton</source>
+        <translation>tona</translation>
+    </message>
+    <message>
+        <location filename="../src/Database.cpp" line="229"/>
+        <source>m2</source>
+        <translation>m2</translation>
+    </message>
+    <message>
+        <location filename="../src/Database.cpp" line="229"/>
+        <source>square meter</source>
+        <translation>metr kwadratowy</translation>
+    </message>
+    <message>
+        <location filename="../src/Database.cpp" line="230"/>
+        <source>rl</source>
+        <translation>rol</translation>
+    </message>
+    <message>
+        <location filename="../src/Database.cpp" line="230"/>
+        <source>roll</source>
+        <translation>rolka</translation>
+    </message>
+</context>
+<context>
     <name>ErrorDialog</name>
     <message>
         <location filename="../src/main.cpp" line="59"/>

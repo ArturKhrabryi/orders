@@ -100,6 +100,7 @@ struct SqlMoveToTrashError : SqlError
 };
 
 struct ColumnIdx { int name, codeEan, quantity, unitCode; };
+struct Unit { QString unitCode, unitDescription; };
 
 class Database
 {

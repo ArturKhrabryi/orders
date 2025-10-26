@@ -3,10 +3,10 @@
 #include <QString>
 #include <QSqlRecord>
 #include <QSqlError>
-#include <qmessagebox.h>
-#include <qnamespace.h>
-#include <qsqlquery.h>
+#include <QCoreApplication>
+#include <qcoreapplication.h>
 #include <stdexcept>
+#include <vector>
 #include "Product.hpp"
 
 
@@ -116,7 +116,13 @@ void Database::add(const Product& product)
     auto rollbackGuard = this->makeRollbackGuard();
 
 
-    QString sql = "INSERT INTO products (name, codeEan, quantity, unitCode) VALUES (?, ?, ?, ?)";
+    QString sql =
+        "INSERT INTO products (name, codeEan, quantity, unitCode) "
+        "VALUES (?, ?, ?, ?) "
+        "ON CONFLICT(codeEan) "
+        "DO UPDATE "
+        "SET quantity = quantity + excluded.quantity";
+
     QSqlQuery cur(this->db);
     cur.prepare(sql);
     cur.addBindValue(product.name);
@@ -136,7 +142,7 @@ void Database::moveToTrash(int id)
     this->transaction();
     auto rollbackGuard = this->makeRollbackGuard();
 
-    QString sql = "INSERT OR REPLACE INTO trash (name, codeEan, quantity, unitCode) SELECT name, codeEan, quantity, unitCode FROM products WHERE id=?";
+    QString sql = "INSERT INTO trash (name, codeEan, quantity, unitCode) SELECT name, codeEan, quantity, unitCode FROM products WHERE id=?";
     QSqlQuery cur(this->db);
     cur.prepare(sql);
     cur.addBindValue(id);
@@ -160,7 +166,7 @@ void Database::moveAllToTrash()
     this->transaction();
     auto rollbackGuard = this->makeRollbackGuard();
 
-    QString sql = "INSERT OR REPLACE INTO trash (name, codeEan, quantity, unitCode) SELECT name, codeEan, quantity, unitCode FROM products";
+    QString sql = "INSERT INTO trash (name, codeEan, quantity, unitCode) SELECT name, codeEan, quantity, unitCode FROM products";
     QSqlQuery cur(this->db);
     if (!cur.exec(sql))
         throw SqlMoveToTrashError(cur.lastError());
@@ -213,15 +219,36 @@ void Database::createUnits()
     if (!cur.exec(sql))
         throw SqlCreationTableError(cur.lastError());
 
-    sql =
-        "INSERT OR IGNORE INTO units (code, name) VALUES\n"
-            "\t('kpl', 'komplet'),\n"
-            "\t('op', 'opakowanie'),\n"
-            "\t('pal', 'paleta'),\n"
-            "\t('szt', 'sztuka'),\n"
-            "\t('t', 'tona'),\n"
-            "\t('m2', 'metr kwadratowy'),\n"
-            "\t('rol', 'rolka')";
+    const std::vector<Unit> units = {
+
+        { QCoreApplication::translate("DatabaseUnits", "st"),
+            QCoreApplication::translate("DatabaseUnits", "set") },
+
+        { QCoreApplication::translate("DatabaseUnits", "pkg"),
+            QCoreApplication::translate("DatabaseUnits", "packaging") },
+
+        { QCoreApplication::translate("DatabaseUnits", "pal"),
+            QCoreApplication::translate("DatabaseUnits", "palette") },
+
+        { QCoreApplication::translate("DatabaseUnits", "pc"),
+            QCoreApplication::translate("DatabaseUnits", "piece") },
+
+        { QCoreApplication::translate("DatabaseUnits", "t"),
+            QCoreApplication::translate("DatabaseUnits", "ton") },
+
+        { QCoreApplication::translate("DatabaseUnits", "m2"),
+            QCoreApplication::translate("DatabaseUnits", "square meter") },
+
+        { QCoreApplication::translate("DatabaseUnits", "rl"),
+            QCoreApplication::translate("DatabaseUnits", "roll") }
+    };
+
+    sql = QStringLiteral("INSERT OR IGNORE INTO units (code, name) VALUES\n");
+    for (const auto& unit : units)
+    {
+        sql += QStringLiteral("\t('%1', '%2'),\n").arg(unit.unitCode).arg(unit.unitDescription);
+    }
+    sql.chop(2);
 
     if (!cur.exec(sql))
         throw SqlInsertionIntoTableError(cur.lastError());
@@ -250,9 +277,9 @@ void Database::createTrash()
     QString sql =
         "CREATE TABLE IF NOT EXISTS trash (\n"
             "\tid INTEGER PRIMARY KEY,\n"
-            "\tname TEXT UNIQUE NOT NULL,\n"
-            "\tcodeEan TEXT UNIQUE,\n"
-            "\tquantity REAL NOT NULL CHECK (quantity >= 0),\n"
+            "\tname TEXT NOT NULL,\n"
+            "\tcodeEan TEXT,\n"
+            "\tquantity REAL NOT NULL,\n"
             "\tunitCode TEXT NOT NULL,\n"
             "\tFOREIGN KEY (unitCode) REFERENCES units(code)\n"
             "\tON UPDATE CASCADE\n"
