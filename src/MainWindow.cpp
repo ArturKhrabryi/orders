@@ -1,4 +1,5 @@
 #include "MainWindow.hpp"
+#include <limits>
 #include <QPushButton>
 #include <QIcon>
 #include <QSize>
@@ -9,6 +10,7 @@
 #include <QInputDialog>
 #include <QFileDialog>
 #include <QStringLiteral>
+#include <QLocale>
 #include "Database.hpp"
 #include "ProductFormWidget.hpp"
 #include "ProductsTableView.hpp"
@@ -23,7 +25,8 @@ MainWindow::MainWindow(QWidget* parent) :
     addButton(new QPushButton(tr("&Add the entered product"), central)),
     convertButton(new QPushButton("", central)),
     clearButton(new QPushButton(tr("&Clear the database"), central)),
-    barcodeButton(new QPushButton("", central))
+    barcodeButton(new QPushButton("", central)),
+    marginButton(new QPushButton(tr("&Calculate margin"), central))
 {
 	this->setCentralWidget(this->central);
 
@@ -35,7 +38,7 @@ MainWindow::MainWindow(QWidget* parent) :
     this->forms->focusNameForm();
 
 	this->setWindowTitle(tr("Orders"));
-	this->resize(300, 400);
+	this->resize(500, 650);
 }
 
 void MainWindow::refreshModel()
@@ -182,6 +185,53 @@ void MainWindow::onDeleteSelected() noexcept
     this->refreshModel();
 }
 
+void MainWindow::onCalculateMargin() noexcept
+{
+    auto calculateSellingPrice = [](float netPrice, float percentage, float VAT = 23.f) -> float {
+        float grossPrice = VAT / 100.f;
+        grossPrice += 1;
+        grossPrice *= netPrice;
+        float delimiter = percentage / 100.f;
+        delimiter = 1 - delimiter;
+
+        return grossPrice / delimiter;
+    };
+
+    bool ok;
+    float netPrice = static_cast<float>(QInputDialog::getDouble(
+        this,
+        tr("Enter the net purchase price"),
+        tr("Price:"),
+        0.0,
+        0.0,
+        std::numeric_limits<double>::max(),
+        2,
+        &ok
+    ));
+
+    if (!ok)
+        return;
+
+    float percentage = static_cast<float>(QInputDialog::getDouble(
+        this,
+        tr("Enter the margin percentage"),
+        tr("Percentage:"),
+        30.0,
+        0.0,
+        99.999,
+        2,
+        &ok
+    ));
+
+    if (!ok)
+        return;
+
+    QString msg = tr("Selling price: ");
+    float sellingPrice = calculateSellingPrice(netPrice, percentage);
+    msg += QLocale().toString(sellingPrice, 'f', 2);
+    QMessageBox::information(this, tr("Selling price calculated"), msg);
+}
+
 void MainWindow::buildUi()
 {
 	auto* mainLayout = new QVBoxLayout(this->central);
@@ -208,8 +258,8 @@ void MainWindow::buildUi()
     auto* row = new QVBoxLayout;
     row->addWidget(this->addButton);
     row->addWidget(this->clearButton);
+    row->addWidget(this->marginButton);
     cols->addLayout(row);
-
 }
 
 void MainWindow::createActions()
@@ -218,6 +268,7 @@ void MainWindow::createActions()
 	this->connect(this->convertButton, &QPushButton::clicked, this, &MainWindow::onConvert);
 	this->connect(this->clearButton, &QPushButton::clicked, this, &MainWindow::onClearAll);
 	this->connect(this->barcodeButton, &QPushButton::clicked, this, &MainWindow::onGenerateBarcode);
+    this->connect(this->marginButton, &QPushButton::clicked, this, &MainWindow::onCalculateMargin);
 
     auto deleteAction = new QAction(this);
     deleteAction->setShortcut(QKeySequence::Delete);

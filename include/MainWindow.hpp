@@ -21,6 +21,7 @@ private slots:
     void onClearAll() noexcept;
     void onGenerateBarcode() noexcept;
     void onDeleteSelected() noexcept;
+    void onCalculateMargin() noexcept;
 
 private:
     QWidget* central;
@@ -31,6 +32,7 @@ private:
     QPushButton* convertButton;
     QPushButton* clearButton;
     QPushButton* barcodeButton;
+    QPushButton* marginButton;
 
     Database db;
 

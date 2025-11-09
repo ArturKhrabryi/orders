@@ -37,67 +37,67 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/Database.cpp" line="224"/>
+        <location filename="../src/Database.cpp" line="225"/>
         <source>set</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/Database.cpp" line="225"/>
+        <location filename="../src/Database.cpp" line="227"/>
         <source>pkg</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/Database.cpp" line="225"/>
+        <location filename="../src/Database.cpp" line="228"/>
         <source>packaging</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/Database.cpp" line="226"/>
+        <location filename="../src/Database.cpp" line="230"/>
         <source>pal</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/Database.cpp" line="226"/>
+        <location filename="../src/Database.cpp" line="231"/>
         <source>palette</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/Database.cpp" line="227"/>
+        <location filename="../src/Database.cpp" line="233"/>
         <source>pc</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/Database.cpp" line="227"/>
+        <location filename="../src/Database.cpp" line="234"/>
         <source>piece</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/Database.cpp" line="228"/>
+        <location filename="../src/Database.cpp" line="236"/>
         <source>t</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/Database.cpp" line="228"/>
+        <location filename="../src/Database.cpp" line="237"/>
         <source>ton</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/Database.cpp" line="229"/>
+        <location filename="../src/Database.cpp" line="239"/>
         <source>m2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/Database.cpp" line="229"/>
+        <location filename="../src/Database.cpp" line="240"/>
         <source>square meter</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/Database.cpp" line="230"/>
+        <location filename="../src/Database.cpp" line="242"/>
         <source>rl</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/Database.cpp" line="230"/>
+        <location filename="../src/Database.cpp" line="243"/>
         <source>roll</source>
         <translation type="unfinished"></translation>
     </message>
@@ -150,128 +150,163 @@
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../src/MainWindow.cpp" line="23"/>
+        <location filename="../src/MainWindow.cpp" line="25"/>
         <source>&amp;Add the entered product</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cpp" line="25"/>
+        <location filename="../src/MainWindow.cpp" line="27"/>
         <source>&amp;Clear the database</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cpp" line="37"/>
+        <location filename="../src/MainWindow.cpp" line="29"/>
+        <source>&amp;Calculate margin</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/MainWindow.cpp" line="40"/>
         <source>Orders</source>
         <translation>Заказы</translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cpp" line="64"/>
-        <location filename="../src/MainWindow.cpp" line="150"/>
-        <location filename="../src/MainWindow.cpp" line="177"/>
+        <location filename="../src/MainWindow.cpp" line="67"/>
+        <location filename="../src/MainWindow.cpp" line="153"/>
+        <location filename="../src/MainWindow.cpp" line="180"/>
         <source>Error: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cpp" line="66"/>
+        <location filename="../src/MainWindow.cpp" line="69"/>
         <source>
 Try again</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cpp" line="68"/>
+        <location filename="../src/MainWindow.cpp" line="71"/>
         <source>Failed to add product</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cpp" line="84"/>
+        <location filename="../src/MainWindow.cpp" line="87"/>
         <source>Conversion result</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cpp" line="86"/>
+        <location filename="../src/MainWindow.cpp" line="89"/>
         <source>Completed successfully: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cpp" line="88"/>
-        <location filename="../src/MainWindow.cpp" line="146"/>
+        <location filename="../src/MainWindow.cpp" line="91"/>
+        <location filename="../src/MainWindow.cpp" line="149"/>
         <source>Startup error: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cpp" line="93"/>
-        <location filename="../src/MainWindow.cpp" line="160"/>
+        <location filename="../src/MainWindow.cpp" line="96"/>
+        <location filename="../src/MainWindow.cpp" line="163"/>
         <source>Confirmation</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cpp" line="93"/>
+        <location filename="../src/MainWindow.cpp" line="96"/>
         <source>Are you sure you want to clear the database?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cpp" line="100"/>
+        <location filename="../src/MainWindow.cpp" line="103"/>
         <source>Database cleared</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cpp" line="100"/>
+        <location filename="../src/MainWindow.cpp" line="103"/>
         <source>The database was successfully cleared</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cpp" line="104"/>
+        <location filename="../src/MainWindow.cpp" line="107"/>
         <source>Database error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cpp" line="108"/>
+        <location filename="../src/MainWindow.cpp" line="111"/>
         <source>Error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cpp" line="115"/>
+        <location filename="../src/MainWindow.cpp" line="118"/>
         <source>Enter barcode</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cpp" line="115"/>
+        <location filename="../src/MainWindow.cpp" line="118"/>
         <source>Barcode:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cpp" line="125"/>
+        <location filename="../src/MainWindow.cpp" line="128"/>
         <source>Choose where to save the barcode</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cpp" line="127"/>
+        <location filename="../src/MainWindow.cpp" line="130"/>
         <source>PNG Images (*.png)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cpp" line="142"/>
+        <location filename="../src/MainWindow.cpp" line="145"/>
         <source>Generation result</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cpp" line="144"/>
+        <location filename="../src/MainWindow.cpp" line="147"/>
         <source>Barcode generated successfully</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cpp" line="150"/>
+        <location filename="../src/MainWindow.cpp" line="153"/>
         <source>Something went wrong</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cpp" line="160"/>
+        <location filename="../src/MainWindow.cpp" line="163"/>
         <source>Are you sure you want to delete this product?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cpp" line="177"/>
+        <location filename="../src/MainWindow.cpp" line="180"/>
         <source>Error while deleting product</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/MainWindow.cpp" line="203"/>
+        <source>Enter the net purchase price</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/MainWindow.cpp" line="204"/>
+        <source>Price:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/MainWindow.cpp" line="217"/>
+        <source>Enter the margin percentage</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/MainWindow.cpp" line="218"/>
+        <source>Percentage:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/MainWindow.cpp" line="229"/>
+        <source>Selling price: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/MainWindow.cpp" line="232"/>
+        <source>Selling price calculated</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
