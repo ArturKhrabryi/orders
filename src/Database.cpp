@@ -2,12 +2,11 @@
 
 #include <QString>
 #include <QSqlRecord>
-#include <QSqlError>
 #include <QCoreApplication>
-#include <qcoreapplication.h>
 #include <stdexcept>
 #include <vector>
 #include "Product.hpp"
+#include "DatabaseError.hpp"
 
 
 Database::Database() :

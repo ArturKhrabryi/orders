@@ -12,6 +12,7 @@
 #include <QStringLiteral>
 #include <QLocale>
 #include "Database.hpp"
+#include "DatabaseError.hpp"
 #include "ProductFormWidget.hpp"
 #include "ProductsTableView.hpp"
 #include "ProcessRunner.hpp"
