@@ -13,7 +13,6 @@ ProductFormWidget::ProductFormWidget(QWidget* parent) :
     unitCodeForm(new QLineEdit(this))
 {
     auto* layout = new QVBoxLayout(this);
-
     auto makeForm = [&](const QString& labelText, const QString& placeholder, QLineEdit* form) -> void
     {
         auto label = new QLabel(labelText, this);

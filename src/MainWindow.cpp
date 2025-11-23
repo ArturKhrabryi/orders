@@ -11,11 +11,13 @@
 #include <QFileDialog>
 #include <QStringLiteral>
 #include <QLocale>
+#include <qnamespace.h>
 #include "Database.hpp"
 #include "DatabaseError.hpp"
 #include "ProductFormWidget.hpp"
 #include "ProductsTableView.hpp"
 #include "ProcessRunner.hpp"
+#include "MarginCalculator.hpp"
 
 
 MainWindow::MainWindow(QWidget* parent) :
@@ -188,49 +190,55 @@ void MainWindow::onDeleteSelected() noexcept
 
 void MainWindow::onCalculateMargin() noexcept
 {
-    auto calculateSellingPrice = [](float netPrice, float percentage, float VAT = 23.f) -> float {
-        float grossPrice = VAT / 100.f;
-        grossPrice += 1;
-        grossPrice *= netPrice;
-        float delimiter = percentage / 100.f;
-        delimiter = 1 - delimiter;
+//    auto calculateSellingPrice = [](float netPrice, float percentage, float VAT = 23.f) -> float {
+//        float grossPrice = VAT / 100.f;
+//        grossPrice += 1;
+//        grossPrice *= netPrice;
+//        float delimiter = percentage / 100.f;
+//        delimiter = 1 - delimiter;
+//
+//        return grossPrice / delimiter;
+//    };
+//
+//    bool ok;
+//    float netPrice = static_cast<float>(QInputDialog::getDouble(
+//        this,
+//        tr("Enter the net purchase price"),
+//        tr("Price:"),
+//        0.0,
+//        0.0,
+//        std::numeric_limits<double>::max(),
+//        2,
+//        &ok
+//    ));
+//
+//    if (!ok)
+//        return;
+//
+//    float percentage = static_cast<float>(QInputDialog::getDouble(
+//        this,
+//        tr("Enter the margin percentage"),
+//        tr("Percentage:"),
+//        30.0,
+//        0.0,
+//        99.999,
+//        2,
+//        &ok
+//    ));
+//
+//    if (!ok)
+//        return;
+//
+//    QString msg = tr("Selling price: ");
+//    float sellingPrice = calculateSellingPrice(netPrice, percentage);
+//    msg += QLocale().toString(sellingPrice, 'f', 2);
+//    QMessageBox::information(this, tr("Selling price calculated"), msg);
 
-        return grossPrice / delimiter;
-    };
-
-    bool ok;
-    float netPrice = static_cast<float>(QInputDialog::getDouble(
-        this,
-        tr("Enter the net purchase price"),
-        tr("Price:"),
-        0.0,
-        0.0,
-        std::numeric_limits<double>::max(),
-        2,
-        &ok
-    ));
-
-    if (!ok)
-        return;
-
-    float percentage = static_cast<float>(QInputDialog::getDouble(
-        this,
-        tr("Enter the margin percentage"),
-        tr("Percentage:"),
-        30.0,
-        0.0,
-        99.999,
-        2,
-        &ok
-    ));
-
-    if (!ok)
-        return;
-
-    QString msg = tr("Selling price: ");
-    float sellingPrice = calculateSellingPrice(netPrice, percentage);
-    msg += QLocale().toString(sellingPrice, 'f', 2);
-    QMessageBox::information(this, tr("Selling price calculated"), msg);
+    auto* marginCalculator = new MarginCalculator(this);
+    marginCalculator->setAttribute(Qt::WA_DeleteOnClose);
+    marginCalculator->setWindowTitle(tr("Margin calculator"));
+    marginCalculator->resize(300, 400);
+    marginCalculator->exec();
 }
 
 void MainWindow::buildUi()

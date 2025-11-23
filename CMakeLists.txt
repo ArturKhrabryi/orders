@@ -82,6 +82,7 @@ set(QT_OBJECT_INCLUDES
     include/DatabaseProductsModel.hpp
     include/ProductFormWidget.hpp
     include/ProductsTableView.hpp
+    include/MarginCalculator.hpp
 )
 list (APPEND SOURCES ${QT_OBJECT_INCLUDES})
 
