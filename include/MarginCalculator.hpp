@@ -1,16 +1,8 @@
 #pragma once
 
 #include <QDialog>
-#include <QLineEdit>
-#include <QDoubleValidator>
+#include <QDoubleSpinBox>
 
-
-class MarginValidator : public QDoubleValidator
-{
-public:
-    using QDoubleValidator::QDoubleValidator;
-    State validate(QString& str, int& pos) const override;
-};
 
 class MarginCalculator final : public QDialog
 {
@@ -19,17 +11,45 @@ public:
     explicit MarginCalculator(QWidget* parent = nullptr);
 
 private:
-    QLineEdit* netPurchasePrice;
-    QLineEdit* vatPercentage;
-    QLineEdit* grossPurchasePrice;
-    QLineEdit* marginPercentage;
-    QLineEdit* netSellingPrice;
-    QLineEdit* grossSellingPrice;
+    enum class FieldChanged
+    {
+        NetPurchasePrice,
+        VatPercentage,
+        GrossPurchasePrice,
+        MarginPercentage,
+        NetSellingPrice,
+        GrossSellingPrice
+    };
 
-    MarginValidator* priceValidator;
-    QDoubleValidator* percentageValidator;
+    struct MarginParams
+    {
+        double netPurchasePrice = 0.0;
+        double vatPercentage = 0.0;
+        double grossPurchasePrice = 0.0;
+        double marginPercentage = 0.0;
+        double netSellingPrice = 0.0;
+        double grossSellingPrice = 0.0;
+    };
+
+    QDoubleSpinBox* netPurchasePrice;
+    QDoubleSpinBox* vatPercentage;
+    QDoubleSpinBox* grossPurchasePrice;
+    QDoubleSpinBox* marginPercentage;
+    QDoubleSpinBox* netSellingPrice;
+    QDoubleSpinBox* grossSellingPrice;
 
     void createForms() noexcept;
-    void setValidators() noexcept;
+
+
+    MarginParams recalculate(FieldChanged FieldChanged) const noexcept;
+
+    void onNetPurchasePriceChanged() noexcept;
+    void onVatChanged() noexcept;
+    void onGrossPurchasePriceChanged() noexcept;
+    void onMarginChanged() noexcept;
+    void onNetSellingPriceChanged() noexcept;
+    void onGrossSellingPriceChanged() noexcept;
+
+    void connectSygnals() noexcept;
 };
 

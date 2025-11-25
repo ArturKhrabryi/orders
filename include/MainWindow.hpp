@@ -15,7 +15,7 @@ class MainWindow : public QMainWindow
 public:
 	explicit MainWindow(QWidget* parent = nullptr);
 
-private slots:
+private:
     void onAddProduct() noexcept;
     void onConvert() noexcept;
     void onClearAll() noexcept;
@@ -23,7 +23,7 @@ private slots:
     void onDeleteSelected() noexcept;
     void onCalculateMargin() noexcept;
 
-private:
+
     QWidget* central;
     ProductsTableView* view;
     ProductFormWidget* forms;
