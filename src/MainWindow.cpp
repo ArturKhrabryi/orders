@@ -1,5 +1,4 @@
 #include "MainWindow.hpp"
-#include <limits>
 #include <QPushButton>
 #include <QIcon>
 #include <QSize>
@@ -11,7 +10,6 @@
 #include <QFileDialog>
 #include <QStringLiteral>
 #include <QLocale>
-#include <qnamespace.h>
 #include "Database.hpp"
 #include "DatabaseError.hpp"
 #include "ProductFormWidget.hpp"
@@ -103,7 +101,6 @@ void MainWindow::onClearAll() noexcept
         {
             this->db.moveAllToTrash();
             this->refreshModel();
-            QMessageBox::information(this, tr("Database cleared"), tr("The database was successfully cleared"));
         }
         catch (const SqlError& ex)
         {
