@@ -4,22 +4,22 @@
 <context>
     <name>DatabaseProductsModel</name>
     <message>
-        <location filename="../src/Database.cpp" line="41"/>
+        <location filename="../src/Database.cpp" line="40"/>
         <source>Name</source>
         <translation>Nazwa</translation>
     </message>
     <message>
-        <location filename="../src/Database.cpp" line="42"/>
+        <location filename="../src/Database.cpp" line="41"/>
         <source>Code ean</source>
         <translation>Kod kreskowy</translation>
     </message>
     <message>
-        <location filename="../src/Database.cpp" line="43"/>
+        <location filename="../src/Database.cpp" line="42"/>
         <source>Quantity</source>
         <translation>Ilość</translation>
     </message>
     <message>
-        <location filename="../src/Database.cpp" line="44"/>
+        <location filename="../src/Database.cpp" line="43"/>
         <source>Unit</source>
         <translation>Jednostka</translation>
     </message>
@@ -32,72 +32,72 @@
 <context>
     <name>DatabaseUnits</name>
     <message>
-        <location filename="../src/Database.cpp" line="224"/>
+        <location filename="../src/Database.cpp" line="223"/>
         <source>st</source>
         <translation>kpl</translation>
     </message>
     <message>
-        <location filename="../src/Database.cpp" line="225"/>
+        <location filename="../src/Database.cpp" line="224"/>
         <source>set</source>
         <translation>komplet</translation>
     </message>
     <message>
-        <location filename="../src/Database.cpp" line="227"/>
+        <location filename="../src/Database.cpp" line="226"/>
         <source>pkg</source>
         <translation>op</translation>
     </message>
     <message>
-        <location filename="../src/Database.cpp" line="228"/>
+        <location filename="../src/Database.cpp" line="227"/>
         <source>packaging</source>
         <translation>opakowanie</translation>
     </message>
     <message>
-        <location filename="../src/Database.cpp" line="230"/>
+        <location filename="../src/Database.cpp" line="229"/>
         <source>pal</source>
         <translation>pal</translation>
     </message>
     <message>
-        <location filename="../src/Database.cpp" line="231"/>
+        <location filename="../src/Database.cpp" line="230"/>
         <source>palette</source>
         <translation>paleta</translation>
     </message>
     <message>
-        <location filename="../src/Database.cpp" line="233"/>
+        <location filename="../src/Database.cpp" line="232"/>
         <source>pc</source>
         <translation>szt</translation>
     </message>
     <message>
-        <location filename="../src/Database.cpp" line="234"/>
+        <location filename="../src/Database.cpp" line="233"/>
         <source>piece</source>
         <translation>sztuka</translation>
     </message>
     <message>
-        <location filename="../src/Database.cpp" line="236"/>
+        <location filename="../src/Database.cpp" line="235"/>
         <source>t</source>
         <translation>t</translation>
     </message>
     <message>
-        <location filename="../src/Database.cpp" line="237"/>
+        <location filename="../src/Database.cpp" line="236"/>
         <source>ton</source>
         <translation>tona</translation>
     </message>
     <message>
-        <location filename="../src/Database.cpp" line="239"/>
+        <location filename="../src/Database.cpp" line="238"/>
         <source>m2</source>
         <translation>m2</translation>
     </message>
     <message>
-        <location filename="../src/Database.cpp" line="240"/>
+        <location filename="../src/Database.cpp" line="239"/>
         <source>square meter</source>
         <translation>metr kwadratowy</translation>
     </message>
     <message>
-        <location filename="../src/Database.cpp" line="242"/>
+        <location filename="../src/Database.cpp" line="241"/>
         <source>rl</source>
         <translation>rol</translation>
     </message>
     <message>
-        <location filename="../src/Database.cpp" line="243"/>
+        <location filename="../src/Database.cpp" line="242"/>
         <source>roll</source>
         <translation>rolka</translation>
     </message>
@@ -150,165 +150,173 @@
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../src/MainWindow.cpp" line="25"/>
+        <location filename="../src/MainWindow.cpp" line="28"/>
         <source>&amp;Add the entered product</source>
         <translation>&amp;Dodaj wprowadzony towar</translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cpp" line="27"/>
+        <location filename="../src/MainWindow.cpp" line="30"/>
         <source>&amp;Clear the database</source>
         <translation>&amp;Wyczyść bazę</translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cpp" line="29"/>
+        <location filename="../src/MainWindow.cpp" line="32"/>
         <source>&amp;Calculate margin</source>
-        <translation>&amp;Kalkulator marży</translation>
+        <translation type="unfinished">K&amp;alkulator marży</translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cpp" line="40"/>
+        <location filename="../src/MainWindow.cpp" line="43"/>
         <source>Orders</source>
         <translation>Zamówienia</translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cpp" line="67"/>
-        <location filename="../src/MainWindow.cpp" line="153"/>
-        <location filename="../src/MainWindow.cpp" line="180"/>
+        <location filename="../src/MainWindow.cpp" line="70"/>
+        <location filename="../src/MainWindow.cpp" line="156"/>
+        <location filename="../src/MainWindow.cpp" line="183"/>
         <source>Error: </source>
         <translation>Błąd: </translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cpp" line="69"/>
+        <location filename="../src/MainWindow.cpp" line="72"/>
         <source>
 Try again</source>
         <translation>
 Spróbuj ponownie</translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cpp" line="71"/>
+        <location filename="../src/MainWindow.cpp" line="74"/>
         <source>Failed to add product</source>
         <translation>Nie udało się dodać towar</translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cpp" line="87"/>
+        <location filename="../src/MainWindow.cpp" line="90"/>
         <source>Conversion result</source>
         <translation>Wynik konwersji</translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cpp" line="89"/>
+        <location filename="../src/MainWindow.cpp" line="92"/>
         <source>Completed successfully: </source>
         <translation>Zakończono pomyślnie: </translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cpp" line="91"/>
-        <location filename="../src/MainWindow.cpp" line="149"/>
+        <location filename="../src/MainWindow.cpp" line="94"/>
+        <location filename="../src/MainWindow.cpp" line="152"/>
         <source>Startup error: </source>
         <translation>Błąd uruchamiania: </translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cpp" line="96"/>
-        <location filename="../src/MainWindow.cpp" line="163"/>
+        <location filename="../src/MainWindow.cpp" line="99"/>
+        <location filename="../src/MainWindow.cpp" line="166"/>
         <source>Confirmation</source>
         <translation>Potwierdzenie</translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cpp" line="96"/>
+        <location filename="../src/MainWindow.cpp" line="99"/>
         <source>Are you sure you want to clear the database?</source>
         <translation>Czy na pewno chcesz wyczyścić bazę?</translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cpp" line="103"/>
+        <location filename="../src/MainWindow.cpp" line="106"/>
         <source>Database cleared</source>
         <translation>Wyczyszczono bazę</translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cpp" line="103"/>
+        <location filename="../src/MainWindow.cpp" line="106"/>
         <source>The database was successfully cleared</source>
         <translation>Baza została pomyślnie wyczyszczona</translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cpp" line="107"/>
+        <location filename="../src/MainWindow.cpp" line="110"/>
         <source>Database error</source>
         <translation>Błąd bazy danych</translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cpp" line="111"/>
+        <location filename="../src/MainWindow.cpp" line="114"/>
         <source>Error</source>
         <translation>Błąd</translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cpp" line="118"/>
+        <location filename="../src/MainWindow.cpp" line="121"/>
         <source>Enter barcode</source>
         <translation>Wprowadź kod kreskowy</translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cpp" line="118"/>
+        <location filename="../src/MainWindow.cpp" line="121"/>
         <source>Barcode:</source>
         <translation>Kod kreskowy:</translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cpp" line="128"/>
+        <location filename="../src/MainWindow.cpp" line="131"/>
         <source>Choose where to save the barcode</source>
         <translation>Wybierz gdzie zapisać kod kreskowy</translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cpp" line="130"/>
+        <location filename="../src/MainWindow.cpp" line="133"/>
         <source>PNG Images (*.png)</source>
         <translation>PNG Zdjęcia (*.png)</translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cpp" line="145"/>
+        <location filename="../src/MainWindow.cpp" line="148"/>
         <source>Generation result</source>
         <translation>Wynik generacji</translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cpp" line="147"/>
+        <location filename="../src/MainWindow.cpp" line="150"/>
         <source>Barcode generated successfully</source>
         <translation>Kod kreskowy wygenerowany pomyślnie</translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cpp" line="153"/>
+        <location filename="../src/MainWindow.cpp" line="156"/>
         <source>Something went wrong</source>
         <translation>Coś poszło nie tak</translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cpp" line="163"/>
+        <location filename="../src/MainWindow.cpp" line="166"/>
         <source>Are you sure you want to delete this product?</source>
         <translation>Czy na pewno chcesz usunąć ten towar?</translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cpp" line="180"/>
+        <location filename="../src/MainWindow.cpp" line="183"/>
         <source>Error while deleting product</source>
         <translation>Błąd podczas usuwania towaru</translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cpp" line="203"/>
-        <source>Enter the net purchase price</source>
-        <translation>Wprowadź cenę zakupu netto</translation>
+        <location filename="../src/MainWindow.cpp" line="195"/>
+        <source>Margin calculator</source>
+        <translation>Kalkulator marży</translation>
+    </message>
+</context>
+<context>
+    <name>MarginCalculator</name>
+    <message>
+        <location filename="../src/MarginCalculator.cpp" line="34"/>
+        <source>&amp;Net purchase price</source>
+        <translation>&amp;Cena zakupu netto</translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cpp" line="204"/>
-        <source>Price:</source>
-        <translation>Cena:</translation>
+        <location filename="../src/MarginCalculator.cpp" line="35"/>
+        <source>&amp;VAT</source>
+        <translation>&amp;VAT</translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cpp" line="217"/>
-        <source>Enter the margin percentage</source>
-        <translation>Wprowadź procent marży</translation>
+        <location filename="../src/MarginCalculator.cpp" line="36"/>
+        <source>&amp;Gross purchase price</source>
+        <translation>C&amp;ena zakupu brutto</translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cpp" line="218"/>
-        <source>Percentage:</source>
-        <translation>Procent:</translation>
+        <location filename="../src/MarginCalculator.cpp" line="37"/>
+        <source>&amp;Margin percentage</source>
+        <translation>&amp;Procent marży</translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cpp" line="229"/>
-        <source>Selling price: </source>
-        <translation>Cena sprzedaży: </translation>
+        <location filename="../src/MarginCalculator.cpp" line="38"/>
+        <source>N&amp;et selling price</source>
+        <translation>Ce&amp;na sprzedaży netto</translation>
     </message>
     <message>
-        <location filename="../src/MainWindow.cpp" line="232"/>
-        <source>Selling price calculated</source>
-        <translation>Obliczono cenę sprzedaży</translation>
+        <location filename="../src/MarginCalculator.cpp" line="39"/>
+        <source>G&amp;ross selling price</source>
+        <translation>Cen&amp;a sprzedaży brutto</translation>
     </message>
 </context>
 <context>
@@ -322,52 +330,52 @@ Spróbuj ponownie</translation>
 <context>
     <name>ProductFormWidget</name>
     <message>
-        <location filename="../src/ProductFormWidget.cpp" line="26"/>
+        <location filename="../src/ProductFormWidget.cpp" line="25"/>
         <source>&amp;Name</source>
         <translation>&amp;Nazwa</translation>
     </message>
     <message>
-        <location filename="../src/ProductFormWidget.cpp" line="26"/>
+        <location filename="../src/ProductFormWidget.cpp" line="25"/>
         <source>Name</source>
         <translation>Nazwa</translation>
     </message>
     <message>
-        <location filename="../src/ProductFormWidget.cpp" line="27"/>
+        <location filename="../src/ProductFormWidget.cpp" line="26"/>
         <source>&amp;Code ean</source>
         <translation>&amp;Kod kreskowy</translation>
     </message>
     <message>
-        <location filename="../src/ProductFormWidget.cpp" line="27"/>
+        <location filename="../src/ProductFormWidget.cpp" line="26"/>
         <source>Code ean</source>
         <translation>Kod kreskowy</translation>
     </message>
     <message>
-        <location filename="../src/ProductFormWidget.cpp" line="28"/>
+        <location filename="../src/ProductFormWidget.cpp" line="27"/>
         <source>&amp;Quantity</source>
         <translation>&amp;Ilość</translation>
     </message>
     <message>
-        <location filename="../src/ProductFormWidget.cpp" line="28"/>
+        <location filename="../src/ProductFormWidget.cpp" line="27"/>
         <source>Quantity</source>
         <translation>Ilość</translation>
     </message>
     <message>
-        <location filename="../src/ProductFormWidget.cpp" line="29"/>
+        <location filename="../src/ProductFormWidget.cpp" line="28"/>
         <source>&amp;Unit</source>
         <translation>&amp;Jednostka</translation>
     </message>
     <message>
-        <location filename="../src/ProductFormWidget.cpp" line="29"/>
+        <location filename="../src/ProductFormWidget.cpp" line="28"/>
         <source>Unit</source>
         <translation>Jednostka</translation>
     </message>
     <message>
-        <location filename="../src/ProductFormWidget.cpp" line="45"/>
+        <location filename="../src/ProductFormWidget.cpp" line="44"/>
         <source>Name cannot be empty</source>
         <translation>Nazwa nie może być pusta</translation>
     </message>
     <message>
-        <location filename="../src/ProductFormWidget.cpp" line="56"/>
+        <location filename="../src/ProductFormWidget.cpp" line="55"/>
         <source>Invalid quantity value</source>
         <translation>Nieprawidłowa ilość</translation>
     </message>
@@ -375,7 +383,7 @@ Spróbuj ponownie</translation>
 <context>
     <name>SqlAddProductError</name>
     <message>
-        <location filename="../include/Database.hpp" line="91"/>
+        <location filename="../include/DatabaseError.hpp" line="81"/>
         <source>Cannot add product</source>
         <translation>Nie udało się dodać towar</translation>
     </message>
@@ -383,12 +391,12 @@ Spróbuj ponownie</translation>
 <context>
     <name>SqlBeginTransactionError</name>
     <message>
-        <location filename="../include/Database.hpp" line="56"/>
+        <location filename="../include/DatabaseError.hpp" line="46"/>
         <source>Cannot start sql transaction</source>
         <translation>Nie udało się rospocząć sql transakcję</translation>
     </message>
     <message>
-        <location filename="../include/Database.hpp" line="63"/>
+        <location filename="../include/DatabaseError.hpp" line="53"/>
         <source>Cannot commit sql transaction</source>
         <translation>Nie udało się zatwierdzić sql transakcję</translation>
     </message>
@@ -396,7 +404,7 @@ Spróbuj ponownie</translation>
 <context>
     <name>SqlCreationTableError</name>
     <message>
-        <location filename="../include/Database.hpp" line="70"/>
+        <location filename="../include/DatabaseError.hpp" line="60"/>
         <source>Cannot create table</source>
         <translation>Nie udało się utworzyć tabelkę</translation>
     </message>
@@ -404,7 +412,7 @@ Spróbuj ponownie</translation>
 <context>
     <name>SqlEnableForeignKeysError</name>
     <message>
-        <location filename="../include/Database.hpp" line="49"/>
+        <location filename="../include/DatabaseError.hpp" line="39"/>
         <source>Cannot enable foreign keys</source>
         <translation>Nie udało się włączyć klucze zewnętrzne</translation>
     </message>
@@ -412,7 +420,7 @@ Spróbuj ponownie</translation>
 <context>
     <name>SqlFetchProductError</name>
     <message>
-        <location filename="../include/Database.hpp" line="84"/>
+        <location filename="../include/DatabaseError.hpp" line="74"/>
         <source>Cannot fetch products</source>
         <translation>Nie udało się pobrać towarów</translation>
     </message>
@@ -420,7 +428,7 @@ Spróbuj ponownie</translation>
 <context>
     <name>SqlInsertionIntoTableError</name>
     <message>
-        <location filename="../include/Database.hpp" line="77"/>
+        <location filename="../include/DatabaseError.hpp" line="67"/>
         <source>Cannot insert into table</source>
         <translation>Nie udało się wstawić do tabelki</translation>
     </message>
@@ -428,7 +436,7 @@ Spróbuj ponownie</translation>
 <context>
     <name>SqlMoveToTrashError</name>
     <message>
-        <location filename="../include/Database.hpp" line="98"/>
+        <location filename="../include/DatabaseError.hpp" line="88"/>
         <source>Cannot move products to trash</source>
         <translation>Nie udało się przenieść do koszyka</translation>
     </message>
@@ -436,7 +444,7 @@ Spróbuj ponownie</translation>
 <context>
     <name>SqlOpenDatabaseError</name>
     <message>
-        <location filename="../include/Database.hpp" line="42"/>
+        <location filename="../include/DatabaseError.hpp" line="32"/>
         <source>Cannot open database</source>
         <translation>Nie udało się otworzyć bazę danych</translation>
     </message>
