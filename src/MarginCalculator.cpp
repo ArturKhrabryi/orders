@@ -3,7 +3,6 @@
 #include <QLabel>
 #include <limits>
 #include <QSignalBlocker>
-#include <qobject.h>
 
 
 MarginCalculator::MarginCalculator(QWidget* parent) :

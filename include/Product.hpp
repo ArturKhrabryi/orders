@@ -9,6 +9,13 @@ struct Product
 {
     QString name;
     std::optional<CodeEan> codeEan;
-    float quantity;
     QString unitCode;
+};
+
+struct ProductFormData
+{
+    QString name;
+    std::optional<CodeEan> codeEan;
+    QString unitCode;
+    double quantity;
 };

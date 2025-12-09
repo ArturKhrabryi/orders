@@ -3,29 +3,35 @@
 #include <QLabel>
 #include <QLineEdit>
 #include <QVBoxLayout>
+#include <QLocale>
 
 
 ProductFormWidget::ProductFormWidget(QWidget* parent) :
     QWidget(parent),
     nameForm(new QLineEdit(this)),
     codeEanForm(new QLineEdit(this)),
-    quantityForm(new QLineEdit(this)),
+    quantityForm(new QDoubleSpinBox(this)),
     unitCodeForm(new QLineEdit(this))
 {
     auto* layout = new QVBoxLayout(this);
-    auto makeForm = [&](const QString& labelText, const QString& placeholder, QLineEdit* form) -> void
+    auto makeForm = [&](const QString& labelText, QWidget* form) -> void
     {
         auto label = new QLabel(labelText, this);
         label->setBuddy(form);
         layout->addWidget(label);
         layout->addWidget(form);
-        form->setPlaceholderText(placeholder);
     };
 
-    makeForm(tr("&Name"), tr("Name"), this->nameForm);
-    makeForm(tr("&Code ean"), tr("Code ean"), this->codeEanForm);
-    makeForm(tr("&Quantity"), tr("Quantity"), this->quantityForm);
-    makeForm(tr("&Unit"), tr("Unit"), this->unitCodeForm);
+    makeForm(tr("&Name"), this->nameForm);
+    makeForm(tr("&Code ean"), this->codeEanForm);
+    makeForm(tr("&Quantity"), this->quantityForm);
+    makeForm(tr("&Unit"), this->unitCodeForm);
+
+    this->quantityForm->setDecimals(3);
+    this->quantityForm->setMinimum(0.0);
+    this->quantityForm->setMaximum(std::numeric_limits<double>::max());
+    this->quantityForm->setSingleStep(1.0);
+
 }
 
 QString ProductFormWidget::normalizeWords(const QString& input) noexcept
@@ -36,36 +42,26 @@ QString ProductFormWidget::normalizeWords(const QString& input) noexcept
     return words.join(' ');
 }
 
-Product ProductFormWidget::getProduct() const
+ProductFormData ProductFormWidget::getProductFormData() const
 {
-    Product product;
-    auto name = normalizeWords(this->nameForm->text());
-    if (name.isEmpty())
-        throw std::runtime_error(tr("Name cannot be empty").toStdString());
+    ProductFormData productData;
+    productData.name = normalizeWords(this->nameForm->text());
 
-    product.name = std::move(name);
-
-    auto codeEanText = this->codeEanForm->text();
+    auto codeEanText = this->codeEanForm->text().simplified();
     if (!codeEanText.isEmpty())
-        product.codeEan = CodeEan(codeEanText);
+        productData.codeEan = CodeEan(codeEanText);
 
-    bool ok = false;
-    auto quantity = this->quantityForm->text().toFloat(&ok);
-    if (!ok)
-        throw std::runtime_error(tr("Invalid quantity value").toStdString());
+    productData.quantity = this->quantityForm->value();
+    productData.unitCode = this->unitCodeForm->text().simplified().remove(' ').toLower();
 
-    product.quantity = quantity;
-
-    product.unitCode = this->unitCodeForm->text().remove(' ').toLower();
-
-    return product;
+    return productData;
 }
 
 void ProductFormWidget::clear() noexcept
 {
     this->nameForm->clear();
     this->codeEanForm->clear();
-    this->quantityForm->clear();
+    this->quantityForm->setValue(0.0);
     this->unitCodeForm->clear();
 }
 

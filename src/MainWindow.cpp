@@ -13,15 +13,17 @@
 #include "Database.hpp"
 #include "DatabaseError.hpp"
 #include "ProductFormWidget.hpp"
-#include "ProductsTableView.hpp"
+#include "OrderTableView.hpp"
 #include "ProcessRunner.hpp"
 #include "MarginCalculator.hpp"
+#include "OrderTableModel.hpp"
 
 
 MainWindow::MainWindow(QWidget* parent) :
 	QMainWindow(parent),
+    db(),
     central(new QWidget(this)),
-    view(new ProductsTableView(central)),
+    view(new OrderTableView(central)),
     forms(new ProductFormWidget(central)),
     addButton(new QPushButton(tr("&Add the entered product"), central)),
     convertButton(new QPushButton("", central)),
@@ -44,9 +46,9 @@ MainWindow::MainWindow(QWidget* parent) :
 
 void MainWindow::refreshModel()
 {
-    auto* databaseModel = qobject_cast<QSqlTableModel*>(view->model());
-    if (databaseModel)
-        databaseModel->select();
+    auto* orderTableModel = qobject_cast<OrderTableModel*>(view->model());
+    if (orderTableModel)
+        orderTableModel->select();
 
     this->view->resizeColumnsToContents();
 }
@@ -55,8 +57,8 @@ void MainWindow::onAddProduct() noexcept
 {
     try
     {
-        auto product = this->forms->getProduct();
-        this->db.add(product);
+        auto productFormData = this->forms->getProductFormData();
+        this->db.addOrderLine(productFormData);
         this->refreshModel();
         this->forms->clear();
         this->forms->focusNameForm();
@@ -69,7 +71,7 @@ void MainWindow::onAddProduct() noexcept
         message.append(ex.what());
         message.append(tr("\nTry again"));
 
-        QMessageBox::warning(this, tr("Failed to add product"), message);
+        QMessageBox::warning(this, tr("Failed to add order line"), message);
     }
 }
 
@@ -99,7 +101,7 @@ void MainWindow::onClearAll() noexcept
     {
         try
         {
-            this->db.moveAllToTrash();
+            this->db.moveOrderLinesToTrash();
             this->refreshModel();
         }
         catch (const SqlError& ex)
@@ -173,7 +175,7 @@ void MainWindow::onDeleteSelected() noexcept
 
     try
     {
-        this->db.moveToTrash(id);
+        this->db.moveOrderLineToTrash(id);
     }
     catch(const std::exception& ex)
     {

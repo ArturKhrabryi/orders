@@ -10,6 +10,9 @@ struct SqlError : std::runtime_error
 private:
     static std::string makeMessage(const QString& prefix, const QSqlError& sqlError)
     {
+        if (!sqlError.isValid())
+            return QString("%1: no SQL error occured").arg(prefix).toStdString();
+
         QString message = QString("%1: %2 (%3 / %4)")
             .arg(prefix)
             .arg(sqlError.text())
@@ -20,7 +23,7 @@ private:
     } 
 
 public:
-    SqlError(const QString& prefix, const QSqlError& sqlError) : 
+    SqlError(const QString& prefix, const QSqlError& sqlError = QSqlError()) : 
         std::runtime_error(SqlError::makeMessage(prefix, sqlError)),
         sqlError(sqlError)
     {}
@@ -79,6 +82,20 @@ struct SqlAddProductError : SqlError
 {
     SqlAddProductError(const QSqlError& sqlError) :
         SqlError(QCoreApplication::translate("SqlAddProductError", "Cannot add product"), sqlError)
+    {}
+};
+
+struct SqlAddOrderLineError : SqlError
+{
+    SqlAddOrderLineError(const QSqlError& sqlError) :
+        SqlError(QCoreApplication::translate("SqlAddOrderLineError", "Cannot add order line"), sqlError)
+    {}
+};
+
+struct SqlUpdateColumnError : SqlError
+{
+    SqlUpdateColumnError(const QSqlError& sqlError) :
+        SqlError(QCoreApplication::translate("SqlUpdateColumnError", "Cannot update column"), sqlError)
     {}
 };
 

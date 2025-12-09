@@ -1,46 +1,42 @@
 #include "Database.hpp"
-
 #include <QString>
 #include <QSqlRecord>
 #include <QCoreApplication>
+#include <qsqlquery.h>
 #include <stdexcept>
 #include <vector>
 #include "Product.hpp"
 #include "DatabaseError.hpp"
 
 
-Database::Database() :
-    db(QSqlDatabase::addDatabase("QSQLITE")),
-    model(nullptr, db)
+QSqlDatabase Database::createDb()
 {
-    this->db.setDatabaseName("order.db");
-    if (!this->db.open())
-        throw SqlOpenDatabaseError(this->db.lastError());
+    auto db = QSqlDatabase::addDatabase("QSQLITE");
 
-    QSqlQuery cur(this->db);
+    db.setDatabaseName("order.db");
+    if (!db.open())
+        throw SqlOpenDatabaseError(db.lastError());
+
+    QSqlQuery cur(db);
     if (!cur.exec("PRAGMA foreign_keys = ON"))
         throw SqlEnableForeignKeysError(cur.lastError());
 
-    this->transaction();
-    auto rollbackGuard = this->makeRollbackGuard();
+    db.transaction();
+    auto rollbackGuard = ScopeExit([&db]()->void{ db.rollback(); });
 
-    this->createUnits();
-    this->createProducts();
-    this->createTrash();
+    createUnits(db);
+    createProducts(db);
+    createOrderLines(db);
+    createTrash(db);
 
-    this->commit();
+    db.commit();
     rollbackGuard.release();
-    
-    this->model.setTable("products");
-    this->model.setEditStrategy(QSqlTableModel::OnFieldChange);
-    if (!this->model.select())
-        throw std::runtime_error(model.lastError().text().toStdString());
 
-    this->model.setHeaderData(0, Qt::Horizontal, "Id");
-    this->model.setHeaderData(1, Qt::Horizontal, DatabaseProductsModel::tr("Name"));
-    this->model.setHeaderData(2, Qt::Horizontal, DatabaseProductsModel::tr("Code ean"));
-    this->model.setHeaderData(3, Qt::Horizontal, DatabaseProductsModel::tr("Quantity"));
-    this->model.setHeaderData(4, Qt::Horizontal, DatabaseProductsModel::tr("Unit"));
+    return db;
+}
+
+Database::Database() : db(createDb()), model(this)
+{
 }
 
 Database::~Database()
@@ -49,99 +45,122 @@ Database::~Database()
         this->db.close();
 }
 
-std::optional<Product> Database::fetchByCodeEan(const CodeEan& codeEan) const
+bool Database::exists(const CodeEan& codeEan) const
 {
-    QString sql = "SELECT name, codeEan, quantity, unitCode FROM products WHERE codeEan=?";
-    QSqlQuery cur(this->db);
-    cur.setForwardOnly(true);
-    cur.prepare(sql);
-    cur.addBindValue(codeEan.getValue());
+    throw std::runtime_error("Not implemented yet");
 
-    if (!cur.exec())
-        throw SqlFetchProductError(cur.lastError());
-
-    if (!cur.next())
-        return std::nullopt;
-
-    auto indexes = this->getNameIndexes(cur);
-    
-    return this->fromSqlQuery(cur, indexes);
+    return false; 
 }
 
-std::vector<Product> Database::fetchByName(const QString& name) const
+QVariant Database::insertOrGetProduct(const Product& product)
 {
-    QString sql = "SELECT name, codeEan, quantity, unitCode FROM products WHERE name LIKE ?";
     QSqlQuery cur(this->db);
     cur.setForwardOnly(true);
-    cur.prepare(sql);
-    cur.addBindValue("%" + name + "%");
 
-    if (!cur.exec())
-        throw SqlFetchProductError(cur.lastError());
-
-    std::vector<Product> products;
-    auto indexes = this->getNameIndexes(cur);
-    while (cur.next())
-        products.push_back(this->fromSqlQuery(cur, indexes));
-    
-    return products;
-}
-
-std::vector<Product> Database::fetch() const
-{
-    QSqlQuery cur(this->db); 
-    cur.setForwardOnly(true);
-
-    const QString sql = "SELECT name, codeEan, quantity, unitCode FROM products ORDER BY id ASC";
-    if (!cur.exec(sql))
-        throw SqlFetchProductError(cur.lastError());
-
-    std::vector<Product> products;
-    products.reserve(64);
-    auto indexes = this->getNameIndexes(cur);
-    while (cur.next())
+    if (product.codeEan)
     {
-        auto product = this->fromSqlQuery(cur, indexes);
+        if (product.name.isEmpty())
+        {
+            cur.prepare(QStringLiteral(
+                "SELECT id FROM products "
+                "WHERE codeEan = ?"
+            ));
 
-        products.push_back(std::move(product));
+            cur.addBindValue(product.codeEan->getValue());
+        }
+        else
+        {
+            cur.prepare(QStringLiteral(
+                "INSERT INTO products (name, codeEan, unitCode)\n"
+                "VALUES (?, ?, ?)\n"
+                "ON CONFLICT(codeEan) DO UPDATE SET id = id\n"
+                "RETURNING id"
+            ));
+
+            cur.addBindValue(product.name);
+            cur.addBindValue(product.codeEan->getValue());
+            cur.addBindValue(product.unitCode);
+        }
     }
+    else
+    {
+        cur.prepare(QStringLiteral(
+            "INSERT INTO products (name, codeEan, unitCode)\n"
+            "VALUES (?, NULL, ?)\n"
+            "ON CONFLICT(name) DO UPDATE SET id = id\n"
+            "RETURNING id"
+        ));
 
-    return products;
-}
-
-void Database::add(const Product& product)
-{
-    this->transaction();
-    auto rollbackGuard = this->makeRollbackGuard();
-
-
-    QString sql =
-        "INSERT INTO products (name, codeEan, quantity, unitCode) "
-        "VALUES (?, ?, ?, ?) "
-        "ON CONFLICT(codeEan) "
-        "DO UPDATE "
-        "SET quantity = quantity + excluded.quantity";
-
-    QSqlQuery cur(this->db);
-    cur.prepare(sql);
-    cur.addBindValue(product.name);
-    cur.addBindValue(product.codeEan.has_value() ? product.codeEan->getValue() : QVariant()); 
-    cur.addBindValue(product.quantity);
-    cur.addBindValue(product.unitCode);
+        cur.addBindValue(product.name);
+        cur.addBindValue(product.unitCode);
+    }
 
     if (!cur.exec())
         throw SqlAddProductError(cur.lastError());
 
-    this->commit();
-    rollbackGuard.release();
+    if (!cur.next())
+        throw SqlError(QCoreApplication::translate("Database", "'RETURNING' did not return id"));
+
+    return cur.value(0);
 }
 
-void Database::moveToTrash(int id)
+void Database::addOrderLine(const ProductFormData& productFormData)
 {
     this->transaction();
     auto rollbackGuard = this->makeRollbackGuard();
 
-    QString sql = "INSERT INTO trash (name, codeEan, quantity, unitCode) SELECT name, codeEan, quantity, unitCode FROM products WHERE id=?";
+    auto productId = this->insertOrGetProduct({ productFormData.name, productFormData.codeEan, productFormData.unitCode });
+
+    QSqlQuery cur(this->db);
+    cur.setForwardOnly(true);
+    cur.prepare(QStringLiteral(
+        "INSERT INTO orderLines (productId, quantity) "
+        "VALUES (?, ?)"
+    ));
+    cur.addBindValue(productId);
+    cur.addBindValue(productFormData.quantity);
+
+    if (!cur.exec())
+        throw SqlAddOrderLineError(cur.lastError());
+
+    this->commit();
+    rollbackGuard.release();
+}
+
+void Database::updateColumn(const OrderTableModel::Row& row , OrderTableModel::ColumnName columnName, const QVariant& data)
+{
+    this->transaction();
+    auto rollbackGuard = this->makeRollbackGuard();
+
+    bool isOrdersTable = columnName == OrderTableModel::ColumnName::Quantity;
+    QString tableName = isOrdersTable ? "orderLines" : "products";
+    auto columnNameStr = OrderTableModel::realColumnName(columnName);
+    auto id = isOrdersTable ? row.id : row.productId;
+    
+    QString sql = QStringLiteral(
+        "UPDATE %1\n"
+        "SET %2 = ?\n"
+        "WHERE id = ?"
+    ).arg(tableName, columnNameStr);
+
+    QSqlQuery cur(this->db);
+    cur.prepare(sql);
+    cur.addBindValue(data); 
+    cur.addBindValue(id);
+
+    if (!cur.exec())
+        throw SqlUpdateColumnError(cur.lastError());
+
+    this->commit();
+    rollbackGuard.release();
+}
+
+void Database::moveOrderLineToTrash(int id)
+{
+    this->transaction();
+    auto rollbackGuard = this->makeRollbackGuard();
+
+    QString sql = "INSERT INTO trash (productId, quantity) SELECT productId, quantity FROM orderLines WHERE id=?";
     QSqlQuery cur(this->db);
     cur.prepare(sql);
     cur.addBindValue(id);
@@ -149,7 +168,7 @@ void Database::moveToTrash(int id)
     if (!cur.exec())
         throw SqlMoveToTrashError(cur.lastError());
 
-    sql = "DELETE FROM products where id=?";
+    sql = "DELETE FROM orderLines where id=?";
     cur.prepare(sql);
     cur.addBindValue(id);
 
@@ -160,17 +179,17 @@ void Database::moveToTrash(int id)
     rollbackGuard.release();
 }
 
-void Database::moveAllToTrash()
+void Database::moveOrderLinesToTrash()
 {
     this->transaction();
     auto rollbackGuard = this->makeRollbackGuard();
 
-    QString sql = "INSERT INTO trash (name, codeEan, quantity, unitCode) SELECT name, codeEan, quantity, unitCode FROM products";
+    QString sql = "INSERT INTO trash (productId, quantity) SELECT productId, quantity FROM orderLines";
     QSqlQuery cur(this->db);
     if (!cur.exec(sql))
         throw SqlMoveToTrashError(cur.lastError());
 
-    sql = "DELETE FROM products";
+    sql = "DELETE FROM orderLines";
     if (!cur.exec(sql))
         throw SqlMoveToTrashError(cur.lastError());
 
@@ -178,35 +197,7 @@ void Database::moveAllToTrash()
     rollbackGuard.release();
 }
 
-ColumnIdx Database::getNameIndexes(const QSqlQuery& sqlQuery) const noexcept
-{
-    const auto rec = sqlQuery.record();
-    auto iName = rec.indexOf("name");
-    auto iCodeEan = rec.indexOf("codeEan");
-    auto iQuantity = rec.indexOf("quantity");
-    auto iUnitCode = rec.indexOf("unitCode");
-
-    return { iName, iCodeEan, iQuantity, iUnitCode };
-}
-
-Product Database::fromSqlQuery(const QSqlQuery& sqlQuery, const ColumnIdx& indexes) const noexcept
-{
-    const auto& [iName, iCodeEan, iQuantity, iUnitCode] = indexes;
-
-    Product product;
-    product.name = sqlQuery.value(iName).toString();
-    std::optional<CodeEan> codeEan = std::nullopt;
-    auto codeEanValue = sqlQuery.value(iCodeEan);
-    if (!codeEanValue.isNull() && !codeEanValue.toString().isEmpty())
-        codeEan = CodeEan(sqlQuery.value(iCodeEan).toString());
-    product.codeEan = std::move(codeEan);
-    product.quantity = sqlQuery.value(iQuantity).toFloat();
-    product.unitCode = sqlQuery.value(iUnitCode).toString();
-
-    return product;
-}
-
-void Database::createUnits()
+void Database::createUnits(QSqlDatabase& db)
 {
     QString sql =
         "CREATE TABLE IF NOT EXISTS units (\n"
@@ -214,7 +205,7 @@ void Database::createUnits()
             "\tname TEXT NOT NULL\n"
             ") WITHOUT ROWID";
 
-    QSqlQuery cur(this->db);
+    QSqlQuery cur(db);
     if (!cur.exec(sql))
         throw SqlCreationTableError(cur.lastError());
 
@@ -253,38 +244,51 @@ void Database::createUnits()
         throw SqlInsertionIntoTableError(cur.lastError());
 }
 
-void Database::createProducts()
+void Database::createProducts(QSqlDatabase& db)
 {
     QString sql =
         "CREATE TABLE IF NOT EXISTS products (\n"
             "\tid INTEGER PRIMARY KEY,\n"
             "\tname TEXT UNIQUE NOT NULL,\n"
             "\tcodeEan TEXT UNIQUE,\n"
-            "\tquantity REAL NOT NULL CHECK (quantity >= 0),\n"
             "\tunitCode TEXT NOT NULL,\n"
             "\tFOREIGN KEY (unitCode) REFERENCES units(code)\n"
             "\tON UPDATE CASCADE\n"
             "\tON DELETE RESTRICT)";
-    
-    QSqlQuery cur(this->db);
+
+    QSqlQuery cur(db);
     if (!cur.exec(sql))
         throw SqlCreationTableError(cur.lastError());
 }
 
-void Database::createTrash()
+void Database::createOrderLines(QSqlDatabase& db)
+{
+    QString sql =
+        "CREATE TABLE IF NOT EXISTS orderLines (\n"
+            "\tid INTEGER PRIMARY KEY,\n"
+            "\tproductId INTEGER UNIQUE NOT NULL,\n"
+            "\tquantity REAL NOT NULL CHECK (quantity >= 0),\n"
+            "\tFOREIGN KEY (productId) REFERENCES products(id)\n"
+            "\tON UPDATE CASCADE\n"
+            "\tON DELETE RESTRICT)";
+    
+    QSqlQuery cur(db);
+    if (!cur.exec(sql))
+        throw SqlCreationTableError(cur.lastError());
+}
+
+void Database::createTrash(QSqlDatabase& db)
 {
     QString sql =
         "CREATE TABLE IF NOT EXISTS trash (\n"
             "\tid INTEGER PRIMARY KEY,\n"
-            "\tname TEXT NOT NULL,\n"
-            "\tcodeEan TEXT,\n"
+            "\tproductId INTEGER NOT NULL,\n"
             "\tquantity REAL NOT NULL,\n"
-            "\tunitCode TEXT NOT NULL,\n"
-            "\tFOREIGN KEY (unitCode) REFERENCES units(code)\n"
+            "\tFOREIGN KEY (productId) REFERENCES products(id)\n"
             "\tON UPDATE CASCADE\n"
             "\tON DELETE RESTRICT)";
     
-    QSqlQuery cur(this->db);
+    QSqlQuery cur(db);
     if (!cur.exec(sql))
         throw SqlCreationTableError(cur.lastError());
 }

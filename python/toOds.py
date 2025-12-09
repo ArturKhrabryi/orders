@@ -124,7 +124,7 @@ def main() -> None:
     with Database(path=db_path) as db:
         products = db.fetch_products()
         if not products:
-            print("Table `products` is empty - nothing to export")
+            print("Database is empty - nothing to export")
         
             return
 

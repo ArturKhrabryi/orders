@@ -79,9 +79,9 @@ qt_standard_project_setup(
 file (GLOB SOURCES CONFIGURE_DEPENDS src/*.cpp)
 set(QT_OBJECT_INCLUDES
     include/MainWindow.hpp
-    include/DatabaseProductsModel.hpp
+    include/OrderTableModel.hpp
+    include/OrderTableView.hpp
     include/ProductFormWidget.hpp
-    include/ProductsTableView.hpp
     include/MarginCalculator.hpp
 )
 list (APPEND SOURCES ${QT_OBJECT_INCLUDES})

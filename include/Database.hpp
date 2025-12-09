@@ -2,16 +2,14 @@
 
 #include <QSqlDatabase>
 #include <QSqlQuery>
-#include <vector>
-#include "CodeEan.hpp"
-#include "DatabaseProductsModel.hpp"
+#include "OrderTableModel.hpp"
 #include "ScopeExit.hpp"
 
 
+struct ProductFormData;
 struct Product;
+struct CodeEan;
 
-
-struct ColumnIdx { int name, codeEan, quantity, unitCode; };
 struct Unit { QString unitCode, unitDescription; };
 
 class Database
@@ -20,27 +18,31 @@ public:
     Database();
     ~Database(); 
 
-    DatabaseProductsModel* getModel() noexcept { return &this->model; }
+    OrderTableModel* getModel() noexcept { return &this->model; }
 
-    std::optional<Product> fetchByCodeEan(const CodeEan& codeEan) const;
-    std::vector<Product> fetchByName(const QString& name) const;
-    std::vector<Product> fetch() const;
+    bool exists(const CodeEan& codeEan) const;
 
-    void add(const Product& product);
+    void addOrderLine(const ProductFormData& productFormData);
+    void updateColumn(const OrderTableModel::Row& row, OrderTableModel::ColumnName columnName, const QVariant& data);
 
-    void moveToTrash(int id);
-    void moveAllToTrash();
+    void moveOrderLinesToTrash();
+    void moveOrderLineToTrash(int id);
+
+    QSqlDatabase getDb() noexcept { return this->db; }
 
 private:
     QSqlDatabase db;
-    DatabaseProductsModel model;
+    OrderTableModel model;
 
-    ColumnIdx getNameIndexes(const QSqlQuery& sqlQuery) const noexcept;
-    Product fromSqlQuery(const QSqlQuery& sqlQuery, const ColumnIdx& indexes = { 1, 2, 3, 4 }) const noexcept;
+    static QSqlDatabase createDb();
 
-    void createUnits();
-    void createProducts();
-    void createTrash();
+    //return inserted product's id
+    QVariant insertOrGetProduct(const Product& product);
+
+    static void createUnits(QSqlDatabase& db);
+    static void createProducts(QSqlDatabase& db);
+    static void createOrderLines(QSqlDatabase& db);
+    static void createTrash(QSqlDatabase& db);
 
     void transaction();
     void commit();

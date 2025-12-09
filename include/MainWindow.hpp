@@ -4,7 +4,7 @@
 #include "Database.hpp"
 
 
-class ProductsTableView;
+class OrderTableView;
 class ProductFormWidget;
 class QPushButton;
 
@@ -23,9 +23,10 @@ private:
     void onDeleteSelected() noexcept;
     void onCalculateMargin() noexcept;
 
+    Database db;
 
     QWidget* central;
-    ProductsTableView* view;
+    OrderTableView* view;
     ProductFormWidget* forms;
 
     QPushButton* addButton;
@@ -33,8 +34,6 @@ private:
     QPushButton* clearButton;
     QPushButton* barcodeButton;
     QPushButton* marginButton;
-
-    Database db;
 
     void buildUi();
     void createActions();
