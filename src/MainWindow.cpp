@@ -24,7 +24,7 @@ MainWindow::MainWindow(QWidget* parent) :
     db(),
     central(new QWidget(this)),
     view(new OrderTableView(central)),
-    forms(new ProductFormWidget(central)),
+    forms(new ProductFormWidget(central, this->db.getDb())),
     addButton(new QPushButton(tr("&Add the entered product"), central)),
     convertButton(new QPushButton("", central)),
     clearButton(new QPushButton(tr("&Clear the database"), central)),
@@ -210,13 +210,13 @@ void MainWindow::buildUi()
     this->clearButton->setStyleSheet("background-color: rgb(120, 0, 0);");
 
     this->convertButton->setIcon(QIcon(":/icons/db_to_sql.svg"));
-    this->convertButton->setIconSize(QSize(48, 48));
-    this->convertButton->setFixedSize(64, 64);
+    this->convertButton->setIconSize(QSize(60, 60));
+    this->convertButton->setFixedSize(81, 81);
     cols->addWidget(this->convertButton);
 
     this->barcodeButton->setIcon(QIcon(":/icons/ean13.svg"));
-    this->barcodeButton->setIconSize(QSize(48, 48));
-    this->barcodeButton->setFixedSize(64, 64);
+    this->barcodeButton->setIconSize(QSize(60, 60));
+    this->barcodeButton->setFixedSize(81, 81);
     cols->addWidget(this->barcodeButton);
 
     auto* row = new QVBoxLayout;

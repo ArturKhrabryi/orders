@@ -4,14 +4,16 @@
 #include <QLineEdit>
 #include <QVBoxLayout>
 #include <QLocale>
+#include <QSqlTableModel>
+#include <QMessageBox>
 
 
-ProductFormWidget::ProductFormWidget(QWidget* parent) :
+ProductFormWidget::ProductFormWidget(QWidget* parent, const QSqlDatabase& db) :
     QWidget(parent),
     nameForm(new QLineEdit(this)),
     codeEanForm(new QLineEdit(this)),
     quantityForm(new QDoubleSpinBox(this)),
-    unitCodeForm(new QLineEdit(this))
+    unitCodeForm(new QComboBox(this))
 {
     auto* layout = new QVBoxLayout(this);
     auto makeForm = [&](const QString& labelText, QWidget* form) -> void
@@ -32,6 +34,11 @@ ProductFormWidget::ProductFormWidget(QWidget* parent) :
     this->quantityForm->setMaximum(std::numeric_limits<double>::max());
     this->quantityForm->setSingleStep(1.0);
 
+    auto* model = new QSqlTableModel(this, db);
+    model->setTable("units");
+    model->select();
+    this->unitCodeForm->setModel(model);
+    this->unitCodeForm->setModelColumn(0);
 }
 
 QString ProductFormWidget::normalizeWords(const QString& input) noexcept
@@ -52,7 +59,7 @@ ProductFormData ProductFormWidget::getProductFormData() const
         productData.codeEan = CodeEan(codeEanText);
 
     productData.quantity = this->quantityForm->value();
-    productData.unitCode = this->unitCodeForm->text().simplified().remove(' ').toLower();
+    productData.unitCode = this->unitCodeForm->currentText();
 
     return productData;
 }
