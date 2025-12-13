@@ -199,11 +199,12 @@ void Database::moveOrderLinesToTrash()
 
 void Database::createUnits(QSqlDatabase& db)
 {
-    QString sql =
+    QString sql = QStringLiteral(
         "CREATE TABLE IF NOT EXISTS units (\n"
             "\tcode TEXT PRIMARY KEY,\n"
             "\tname TEXT NOT NULL\n"
-            ") WITHOUT ROWID";
+            ") WITHOUT ROWID"
+    );
 
     QSqlQuery cur(db);
     if (!cur.exec(sql))
@@ -246,7 +247,7 @@ void Database::createUnits(QSqlDatabase& db)
 
 void Database::createProducts(QSqlDatabase& db)
 {
-    QString sql =
+    QString sql = QStringLiteral(
         "CREATE TABLE IF NOT EXISTS products (\n"
             "\tid INTEGER PRIMARY KEY,\n"
             "\tname TEXT UNIQUE NOT NULL,\n"
@@ -254,7 +255,8 @@ void Database::createProducts(QSqlDatabase& db)
             "\tunitCode TEXT NOT NULL,\n"
             "\tFOREIGN KEY (unitCode) REFERENCES units(code)\n"
             "\tON UPDATE CASCADE\n"
-            "\tON DELETE RESTRICT)";
+            "\tON DELETE RESTRICT)"
+    );
 
     QSqlQuery cur(db);
     if (!cur.exec(sql))
@@ -263,14 +265,15 @@ void Database::createProducts(QSqlDatabase& db)
 
 void Database::createOrderLines(QSqlDatabase& db)
 {
-    QString sql =
+    QString sql = QStringLiteral(
         "CREATE TABLE IF NOT EXISTS orderLines (\n"
             "\tid INTEGER PRIMARY KEY,\n"
             "\tproductId INTEGER UNIQUE NOT NULL,\n"
             "\tquantity REAL NOT NULL CHECK (quantity >= 0),\n"
             "\tFOREIGN KEY (productId) REFERENCES products(id)\n"
             "\tON UPDATE CASCADE\n"
-            "\tON DELETE RESTRICT)";
+            "\tON DELETE RESTRICT)"
+    );
     
     QSqlQuery cur(db);
     if (!cur.exec(sql))
@@ -279,14 +282,16 @@ void Database::createOrderLines(QSqlDatabase& db)
 
 void Database::createTrash(QSqlDatabase& db)
 {
-    QString sql =
+    QString sql = QStringLiteral(
         "CREATE TABLE IF NOT EXISTS trash (\n"
             "\tid INTEGER PRIMARY KEY,\n"
             "\tproductId INTEGER NOT NULL,\n"
             "\tquantity REAL NOT NULL,\n"
+            "\tcreated_at INTEGER NOT NULL DEFAULT(strftime('%s', 'now')),\n"
             "\tFOREIGN KEY (productId) REFERENCES products(id)\n"
             "\tON UPDATE CASCADE\n"
-            "\tON DELETE RESTRICT)";
+            "\tON DELETE RESTRICT)"
+    );
     
     QSqlQuery cur(db);
     if (!cur.exec(sql))
